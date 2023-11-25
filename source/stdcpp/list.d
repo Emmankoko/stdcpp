@@ -312,7 +312,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 		}
 		}
-		else version(CppRuntime_Clang)
+		else version(CppRuntime_Microsoft)
 		{
 			this(def)
 			{
@@ -450,6 +450,6 @@ extern(C++, class) struct list(Type, Allocator)
 				node* next;
 			}
 			node A;
-			size_type _M_size;
+			//size_type _M_size;
 		}
 }

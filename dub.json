@@ -15,9 +15,9 @@
             "name": "unittest",
             "lflags": [ "-lstdc++" ],
             "preGenerateCommands": [
-		"clang++ -c extras/list.cpp -o extras/list.o"
+		"cl -c extras/list.cpp"
             ],
-            "sourceFiles": [ "extras/*.o" ]
+            "sourceFiles": [ "extras/*.obj" ]
         },
     ]
 }
