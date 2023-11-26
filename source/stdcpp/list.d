@@ -341,13 +341,15 @@ extern(C++, class) struct list(Type, Allocator)
 			//list(n) ctor
 			this(size_type __n, ref const allocator!Type);
 
+			this(size_type n);
+
 			extern(D) this(size_type n)
 			{
 				allocator!Type alloc_instance = allocator!(Type).init;
 				this(n, alloc_instance);
 			}
 
-//			~this();
+			~this();
 
 			extern(D) void assign(size_type n, const value_type item)
 			{
