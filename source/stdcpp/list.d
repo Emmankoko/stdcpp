@@ -199,6 +199,7 @@ extern(C++, class) struct list(Type, Allocator)
 			//list(n) ctor
 			this(size_type __n, ref const allocator!Type);
 
+
 			extern(D) this(size_type n)
 			{
 				allocator!Type alloc_instance = allocator!(Type).init;
@@ -343,11 +344,13 @@ extern(C++, class) struct list(Type, Allocator)
 
 			this(size_type n);
 
-			extern(D) this(size_type n)
+			//this has to be commented out as it has been removed from cxx14 on clang 
+/*			extern(D) this(size_type n)
 			{
 				allocator!Type alloc_instance = allocator!(Type).init;
 				this(n, alloc_instance);
 			}
+*/
 
 			~this();
 
