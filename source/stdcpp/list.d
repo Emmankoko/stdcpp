@@ -404,7 +404,7 @@ extern(C++, class) struct list(Type, Allocator)
 			pointer end() nothrow;
 
 			//const nothrow since c++11
-			bool empty() const nothrow;
+			ushort empty() const nothrow;
 
 			size_type size() const nothrow;
 
