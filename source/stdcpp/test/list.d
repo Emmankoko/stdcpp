@@ -21,4 +21,5 @@ unittest
 	cp_obj.push_back(56);
 	auto newctor = list!int(4);
 	newctor.push_back(6);
+	auto cpctor = list!int(newctor); // copy constructor
 }
