@@ -22,4 +22,5 @@ unittest
 	auto newctor = list!int(4);
 	newctor.push_back(6);
 	auto cpctor = list!int(newctor); // copy constructor
+	assert(cpctor.empty == 0); //checking empty falseness
 }
