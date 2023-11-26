@@ -13,7 +13,7 @@
         },
         {
             "name": "unittest",
-            "lflags": [ "-lstdc++", "-wi" ],
+            "lflags": [ "-lstdc++", "--wi" ],
             "preGenerateCommands": [
 		"cl -c extras/list.cpp"
             ],
