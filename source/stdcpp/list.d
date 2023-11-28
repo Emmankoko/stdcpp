@@ -449,7 +449,7 @@ extern(C++, class) struct list(Type, Allocator)
 			size_type unique(U)(U p);
 
 		private:
-			struct __list_node_base(
+			struct __list_node_base
 			{
 				node* prev;
 				node* next;
@@ -457,6 +457,7 @@ extern(C++, class) struct list(Type, Allocator)
 			node A;
 			//size_type _M_size;
 		}
+/*
 private:
 	version(CppRuntime_Clang)
 	{
@@ -482,6 +483,7 @@ private:
 			
 			
 	}
+*/
 }
 
 
