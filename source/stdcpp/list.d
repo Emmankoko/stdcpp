@@ -449,12 +449,39 @@ extern(C++, class) struct list(Type, Allocator)
 			size_type unique(U)(U p);
 
 		private:
-			struct node
+			struct __list_node_base(
 			{
 				node* prev;
 				node* next;
 			}
 			node A;
-			size_type _M_size;
+			//size_type _M_size;
 		}
+private:
+	version(CppRuntime_Clang)
+	{
+		extern(C++) struct __list_node_base(T, void_ptr)
+		{
+			_list_node_base* prev;
+			_list_node_base* next;
+		}
+
+		extern(C++) __list_impl(T, _Alloc)
+		{
+			import stdcpp.xutility: __compressed_pair;
+			__list_node_base!(T, __void_ptr) __end_;
+			__compressed_pair!(size_type, __node_allocator) __size_alloc;
+
+			ref inout(size_type) __sz() inout nothrow
+			{
+				return { __size_alloc.first();
+			}
+
+			bool empty() const nothrow
+		}
+			
+			
+	}
 }
+
+
