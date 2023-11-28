@@ -25,7 +25,7 @@ on:
     branches:
       - v*.*.x
        #Use this branch name in your fork to test changes
-      - t1
+      - ma-v
 
 jobs:
   main:
