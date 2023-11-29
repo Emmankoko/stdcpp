@@ -404,9 +404,15 @@ extern(C++, class) struct list(Type, Allocator)
 			pointer end() nothrow;
 
 			//const nothrow since c++11
-			ushort empty() const nothrow;
+			bool empty() const nothrow
+			{
+				return __sz() == 0;
+			}
 
-			size_type size() const nothrow;
+			size_type size() const nothrow
+			{
+				return __sz();
+			}
 
 			void clear() nothrow;
 
@@ -454,6 +460,22 @@ extern(C++, class) struct list(Type, Allocator)
 				node* prev;
 				node* next;
 			}
+/*
+			struct __list_node_base(Tp, Voidptr)
+			{
+				__list_node_base* prev;
+				__list_node_base* next;
+			}
+			struct __list_imp(Tp, Alloc)
+			{
+				import stdcpp.xutility: __compressed_pair
+				__list_node_base!(Tp, __void_pointer) __end_;
+				__compressed_pair!(size_type, __node_allocator) __size_alloc_;
+				ref inout(size_type) __sz() nothrow inout
+				{
+					return __size_alloc.first();
+				}
+*/ 
 			node A;
 			size_type _M_size;
 		}
