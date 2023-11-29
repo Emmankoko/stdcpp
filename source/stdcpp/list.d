@@ -404,15 +404,15 @@ extern(C++, class) struct list(Type, Allocator)
 			pointer end() nothrow;
 
 			//const nothrow since c++11
-			bool empty() const nothrow
-			{
-				return __sz() == 0;
-			}
+			bool empty() const nothrow;
+//			{
+//				return __sz() == 0;
+//			}
 
-			size_type size() const nothrow
-			{
-				return __sz();
-			}
+			size_type size() const nothrow;
+//			{
+//				return __sz();
+//			}
 
 			void clear() nothrow;
 
