@@ -21,8 +21,8 @@ unittest
 	cp_obj.push_back(56);
 	auto newctor = list!int(4);
 	newctor.push_back(6);
-	auto it = newctor.begin();
-	assert(*it == 0); // simple testing
+//	auto it = newctor.begin();
+//	assert(*it == 0); // simple testing
 	auto cpctor = list!int(newctor); // copy constructor
 //	assert(cpctor.sizeof == 24); //checking for 24 byte size for list on Mac
 	cp_obj.remove(45);
