@@ -491,7 +491,7 @@ extern(C++, class) struct list(Type, Allocator)
 				//i can just use size_t here but 
 				alias size_type = allocator_traits!(allocator_type).size_type;
 				alias __node_type = __list_node!(value_tp, void_pointer);
-				alias __node_allocator = rebind_alloc!(__node_type);
+				alias __node_allocator = _alloc_traits.rebind_alloc!(__node_type);
 
 
 				import stdcpp.xutility: __compressed_pair;
