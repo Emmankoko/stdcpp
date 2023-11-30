@@ -500,7 +500,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 				ref inout(size_type) __sz() nothrow inout
 				{
-					return __size_alloc.first();
+					return __size_alloc_.first();
 				}
 
 				bool empty() const nothrow	{return __sz() == 0; }
