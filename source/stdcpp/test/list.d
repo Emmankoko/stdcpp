@@ -21,7 +21,7 @@ unittest
 	cp_obj.push_back(56);
 	auto newctor = list!int(4);
 	newctor.push_back(6);
-//	assert(newctor.empty == 0);
+	assert(newctor.empty == 0);
 	assert(newctor.size() == 5);
 //	auto it = newctor.begin();
 //	assert(*it == 0); // simple testing
