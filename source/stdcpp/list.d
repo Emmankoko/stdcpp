@@ -1,4 +1,4 @@
-//**
+/**
  * D bindings for std::list
  *
  * Copyright: Copyright (c) 2023 D Language Foundation
@@ -404,12 +404,12 @@ extern(C++, class) struct list(Type, Allocator)
 			pointer end() nothrow;
 
 			//const nothrow since c++11
-			bool empty() const nothrow;
+			bool empty() const nothrow
 			{
 				return base.empty();
 			}
 
-			size_type size() const nothrow;
+			size_type size() const nothrow
 			{
 				return base.__sz();
 			}
@@ -494,7 +494,7 @@ extern(C++, class) struct list(Type, Allocator)
 				alias __node_allocator = rebind_alloc!(__node_type);
 
 
-				import stdcpp.xutility: __compressed_pair
+				import stdcpp.xutility: __compressed_pair;
 				__list_node_base!(value_tp, void_pointer) __end_;
 				__compressed_pair!(size_type, __node_allocator) __size_alloc_;
 
@@ -504,10 +504,7 @@ extern(C++, class) struct list(Type, Allocator)
 				}
 
 				bool empty() const nothrow	{return __sz() == 0; }
-			}
+			}	
 			__list_imp!(value_type, allocator_type) base;
- 
-//			node A;
-//			size_type _M_size;
 		}
 }
