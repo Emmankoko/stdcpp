@@ -22,7 +22,7 @@ unittest
 	auto newctor = list!int(4);
 	newctor.push_back(6);
 //	assert(newctor.empty == 0);
-//	assert(newctor.size == 5);
+	assert(newctor.size() == 5);
 //	auto it = newctor.begin();
 //	assert(*it == 0); // simple testing
 	auto cpctor = list!int(newctor); // copy constructor
