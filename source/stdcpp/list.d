@@ -391,13 +391,17 @@ extern(C++, class) struct list(Type, Allocator)
 			//const nothrow since C++11
 			allocator_type get_allocator() const nothrow;
 
-			ref value_type front();
+			ref inout(value_type) front() inout
+			{
+				assert(!empty, "list.front called on empty list");
+				return base.__end_.next.__as_node.__get_value;
+			}
 
-//			const(value_type) ref front() const;
-
-			ref value_type back();
-
-//			ref const(value_type) back() const;
+			ref inout(value_type) back() inout
+			{
+				assert(!empty, "list.back called on empty list");
+				return base.__end_.prev.__as_node.__get_value;
+			}
 
 			pointer begin() nothrow;
 
@@ -465,21 +469,50 @@ extern(C++, class) struct list(Type, Allocator)
 
 			extern(C++) struct __list_node_base(Tp, Voidptr)
 			{
-				__list_node_base!(value_type, void*) *prev;
-				__list_node_base!(value_type, void*) * next;
+				__list_node_base* prev;
+				__list_node_base* next;
+
+				__list_node_base* __self()
+				{
+					__list_node_base* self = &this;
+					return self;
+				}
+
+				__list_node!(Tp, void*)* __as_node()
+				{
+					return cast(__list_node!(Tp, void*)*)__self;
+				}
+
+
+
 			}
 
 
 			extern(C++)struct __list_node(Tp, _Voidptr)
 			{
-				__list_node_base!(Tp, _Voidptr) base1;
+				__list_node_base!(Tp, void*) base1;
 			private:
 				union {
 					Tp __value;
 				};
+
+			public:
+				ref Tp __get_value()
+				{
+					return __value;
+				}
 			}
 
 
+			extern(C++, class) __list_iterator(Tp, Voidptr)
+			{
+				__list_node_base!(Tp, void*) __ptr;
+
+				this(__list_node_base!(Tp, void*) *ptr) nothrow
+				{
+					__ptr = ptr;
+				}
+			}
 			extern(C++, class) struct __list_imp(Tp, Alloc)
 			{
 				alias value_tp = Tp;
@@ -503,7 +536,18 @@ extern(C++, class) struct list(Type, Allocator)
 					return __size_alloc_.first();
 				}
 
+				ref inout(__node_allocator) __node_alloc() inout nothrow
+				{
+					return __size_alloc_.second();
+				}
+
 				bool empty() const nothrow	{return __sz() == 0; }
+
+				void __unlink_nodes(__list_node_base* __f, __list_node_base* __l) nothrow
+				{
+					__f.prev.next = __l.next;
+					__l.next.prev = __f.prev;
+				}
 			}	
 			__list_imp!(value_type, allocator_type) base;
 		}
