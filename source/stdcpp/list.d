@@ -544,11 +544,12 @@ extern(C++, class) struct list(Type, Allocator)
 
 				bool empty() const nothrow	{return __sz() == 0; }
 
-				void __unlink_nodes(__list_node_base* __f, __list_node_base* __l) nothrow
+/*				void __unlink_nodes(__list_node_base* __f, __list_node_base* __l) nothrow
 				{
 					__f.prev.next = __l.next;
 					__l.next.prev = __f.prev;
 				}
+*/
 			}	
 			__list_imp!(value_type, allocator_type) base;
 		}
