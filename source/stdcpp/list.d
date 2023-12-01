@@ -504,7 +504,7 @@ extern(C++, class) struct list(Type, Allocator)
 			}
 
 
-			extern(C++, class) __list_iterator(Tp, Voidptr)
+/*			extern(C++, class) __list_iterator(Tp, Voidptr)
 			{
 				__list_node_base!(Tp, void*) __ptr;
 
@@ -513,6 +513,7 @@ extern(C++, class) struct list(Type, Allocator)
 					__ptr = ptr;
 				}
 			}
+*/
 			extern(C++, class) struct __list_imp(Tp, Alloc)
 			{
 				alias value_tp = Tp;
