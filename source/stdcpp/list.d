@@ -391,13 +391,13 @@ extern(C++, class) struct list(Type, Allocator)
 			//const nothrow since C++11
 			allocator_type get_allocator() const nothrow;
 
-			ref inout(value_type) front() inout
+			ref value_type front()
 			{
 				assert(!empty, "list.front called on empty list");
 				return base.__end_.next.__as_node.__get_value;
 			}
 
-			ref inout(value_type) back() inout
+			ref value_type back()
 			{
 				assert(!empty, "list.back called on empty list");
 				return base.__end_.prev.__as_node.__get_value;
