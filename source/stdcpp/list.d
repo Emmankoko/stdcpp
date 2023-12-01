@@ -478,7 +478,7 @@ extern(C++, class) struct list(Type, Allocator)
 					return self;
 				}
 
-				__list_node!(Tp, void*)*) __as_node()
+				__list_node!(Tp, void*)* __as_node()
 				{
 					return cast(__list_node!(Tp, void*)*)__self;
 				}
