@@ -471,8 +471,6 @@ extern(C++, class) struct list(Type, Allocator)
 private:
 version(CppRuntime_Clang)
 {
-extern(C++, (listNamespace)):
-
 
 extern(C++) struct __list_node_base(Tp, Voidptr)
 {
