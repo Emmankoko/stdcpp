@@ -418,7 +418,10 @@ extern(C++, class) struct list(Type, Allocator)
 				return base.__sz();
 			}
 
-			void clear() nothrow;
+			void clear() nothrow
+			{
+				base.clear();
+			}
 
 			//insert halted for now
 
@@ -441,8 +444,6 @@ extern(C++, class) struct list(Type, Allocator)
 			void merge(U)(ref const list!Type other, U comp);
 
 			void remove(const ref value_type val);
-
-//			size_type remove(const ref value_type val);
 
 			void reverse() nothrow;
 
@@ -544,12 +545,43 @@ extern(C++, class) struct list(Type, Allocator)
 
 				bool empty() const nothrow	{return __sz() == 0; }
 
-/*				void __unlink_nodes(__list_node_base* __f, __list_node_base* __l) nothrow
+				void __unlink_nodes(__list_node_base!(value_tp,void_pointer)* __f, __list_node_base!(value_tp, void_pointer)* __l) nothrow
 				{
 					__f.prev.next = __l.next;
 					__l.next.prev = __f.prev;
 				}
-*/
+
+				__list_node_base!(value_tp, void_pointer) __end_as_link() const nothrow
+				{
+					return cast(ref __list_node_base!(value_tp, void_pointer))(__end_).next
+				}
+
+				void clear() nothrow;
+				{
+					if(!empty)
+					{
+						__list_node_base!(value_tp, void_pointer)* __f = __end_.next;
+						__list_node_base!(value_tp, void_pointer)* __l = __end_as_link();
+						__unlink_nodes(__f, __l.prev);
+						__sz() = 0;
+						while(__f != __L)
+						{
+							__list_node!(value_tp, void_pointer)* __np = __f.__as_node();
+							__f = __f.next;
+							__delete_node(__np);
+						}
+					}
+				}
+
+				void __delete_node(__list_node!(value_tp, void pointer)* __node)
+				{
+					ref __node_allocator __alloc = __node_alloc();
+					destroy(&(__node.__get_value));
+					destroy(&(*__node));
+					allocator!(__node_type).deallocate(__node, 1);
+				}
+					
+
 			}	
 			__list_imp!(value_type, allocator_type) base;
 		}

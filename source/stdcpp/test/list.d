@@ -15,6 +15,8 @@ unittest
 	p.assign(5,5);
 	p.pop_front();
 	p.resize(3);
+	p.clear();
+	assert(p.empty() == 1);
 
 	list!int cp_obj = p; //opAssign
 	cp_obj.push_back(45);
