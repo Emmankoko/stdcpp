@@ -463,7 +463,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 
 				
-			__list_imp!(value_type, allocator_type) base;
+			__list_imp!(value_type, allocator!Type) base;
 		}
 }
 
