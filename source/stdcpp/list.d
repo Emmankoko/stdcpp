@@ -551,9 +551,11 @@ extern(C++, class) struct list(Type, Allocator)
 					__l.next.prev = __f.prev;
 				}
 
-				__list_node_base!(value_tp, void_pointer) __end_as_link() const nothrow
+				__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
 				{
-					return cast(ref __list_node_base!(value_tp, void_pointer))(__end_).next
+					__list_node_base!(value_tp, void_pointer) __n = cast(__list_node_base!(value_tp, void_pointer))(__end_).self();
+					return cast(__list_node_base!(value_tp, void*)*)(cast(void*)(ref __n));
+					//return cast(__list_node_base!(value_tp, void_pointer)*)(__end_).next;
 				}
 
 				void clear() nothrow;
@@ -573,7 +575,7 @@ extern(C++, class) struct list(Type, Allocator)
 					}
 				}
 
-				void __delete_node(__list_node!(value_tp, void pointer)* __node)
+				void __delete_node(__list_node!(value_tp, void_pointer)* __node)
 				{
 					ref __node_allocator __alloc = __node_alloc();
 					destroy(&(__node.__get_value));
