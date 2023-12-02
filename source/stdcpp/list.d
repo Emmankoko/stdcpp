@@ -536,9 +536,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 				__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
 				{
-					__list_node_base!(value_tp, void_pointer) __n = cast(__list_node_base!(value_tp, void_pointer))(__end_).__self();
-					return cast(__list_node_base!(value_tp, void*)*)cast(void*)__n*;
-					//return cast(__list_node_base!(value_tp, void_pointer)*)(__end_).next;
+					return cast(__list_node_base!(value_tp, void_pointer)*)cast(void*)(__end_).__self();
 				}
 
 				void clear() nothrow
