@@ -546,40 +546,8 @@ extern(C++, class) struct __list_imp(Tp, Alloc)
 		__f.prev.next = __l.next;
 		__l.next.prev = __f.prev;
 	}
-/*
-	__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
-	{
-		return cast(__list_node_base!(value_tp, void_pointer)*)cast(void*)(__end_).__self();
-	}
-*/
 
 	void clear() nothrow;
-/*	{
-		if(!empty)
-		{
-			__list_node_base!(value_tp, void_pointer)* __f = __end_.next;
-			__list_node_base!(value_tp, void_pointer)* __l = __end_as_link();
-			__unlink_nodes(__f, __l.prev);
-			__sz() = 0;
-			while(__f != __l)
-			{
-				__list_node!(value_tp, void_pointer)* __np = __f.__as_node();
-				__f = __f.next;
-				__delete_node(__np);
-			}
-		}
-	}
-*/
-/*
-
-	void __delete_node(__list_node!(value_tp, void_pointer)* __node)
-	{
-		__node_allocator __alloc = __node_alloc();
-		destroy!false(&(__node.__get_value));
-		destroy!false(&(*__node));
-		__alloc.deallocate(__node, 1);
-	}
-*/
 					
 
 }

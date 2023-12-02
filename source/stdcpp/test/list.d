@@ -30,5 +30,6 @@ unittest
 	auto cpctor = list!int(newctor); // copy constructor
 	assert(cpctor.sizeof == 24); //checking for 24 byte size for list on Mac
 	cp_obj.remove(45);
-//	cp_obj.clear();
+	cp_obj.clear();
+	assert(cp_obj.empty == 1);
 }
