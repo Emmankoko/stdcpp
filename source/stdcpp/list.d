@@ -516,13 +516,13 @@ public:
 extern(C++, class) struct __list_imp(Tp, Alloc)
 {
 	alias value_tp = Tp;
-	alias _alloc_traits = allocator_traits!(allocator_type);
+	alias _alloc_traits = allocator_traits!(allocator!Tp);
 	alias void_pointer = void*;
 	//alias __rebind_alloc(Traits, Tp) = Traits.rebind_alloc!(Tp);
 
 
 	//i can just use size_t here but 
-	alias size_type = allocator_traits!(allocator_type).size_type;
+	alias size_type = allocator_traits!(allocator!Tp).size_type;
 	alias __node_type = __list_node!(value_tp, void_pointer);
 	alias __node_allocator = _alloc_traits.rebind_alloc!(__node_type);
 
