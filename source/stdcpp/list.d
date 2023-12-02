@@ -461,112 +461,128 @@ extern(C++, class) struct list(Type, Allocator)
 
 		private:
 
-			extern(C++) struct __list_node_base(Tp, Voidptr)
-			{
-				__list_node_base* prev;
-				__list_node_base* next;
 
-				__list_node_base* __self()
-				{
-					__list_node_base* self = &this;
-					return self;
-				}
-
-				__list_node!(Tp, void*)* __as_node()
-				{
-					return cast(__list_node!(Tp, void*)*)__self;
-				}
-
-
-
-			}
-
-
-			extern(C++)struct __list_node(Tp, _Voidptr)
-			{
-				__list_node_base!(Tp, void*) base1;
-			private:
-				union {
-					Tp __value;
-				};
-
-			public:
-				ref Tp __get_value()
-				{
-					return __value;
-				}
-			}
-
-
-			extern(C++, class) struct __list_imp(Tp, Alloc)
-			{
-				alias value_tp = Tp;
-				alias _alloc_traits = allocator_traits!(allocator_type);
-				alias void_pointer = void*;
-				//alias __rebind_alloc(Traits, Tp) = Traits.rebind_alloc!(Tp);
-
-
-				//i can just use size_t here but 
-				alias size_type = allocator_traits!(allocator_type).size_type;
-				alias __node_type = __list_node!(value_tp, void_pointer);
-				alias __node_allocator = _alloc_traits.rebind_alloc!(__node_type);
-
-
-				import stdcpp.xutility: __compressed_pair;
-				__list_node_base!(value_tp, void_pointer) __end_;
-				__compressed_pair!(size_type, __node_allocator) __size_alloc_;
-
-				ref inout(size_type) __sz() nothrow inout
-				{
-					return __size_alloc_.first();
-				}
-
-				ref inout(__node_allocator) __node_alloc() inout nothrow
-				{
-					return __size_alloc_.second();
-				}
-
-				bool empty() const nothrow	{return __sz() == 0; }
-
-				void __unlink_nodes(__list_node_base!(value_tp,void_pointer)* __f, __list_node_base!(value_tp, void_pointer)* __l) nothrow
-				{
-					__f.prev.next = __l.next;
-					__l.next.prev = __f.prev;
-				}
-
-				__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
-				{
-					return cast(__list_node_base!(value_tp, void_pointer)*)cast(void*)(__end_).__self();
-				}
-
-				void clear() nothrow
-				{
-					if(!empty)
-					{
-						__list_node_base!(value_tp, void_pointer)* __f = __end_.next;
-						__list_node_base!(value_tp, void_pointer)* __l = __end_as_link();
-						__unlink_nodes(__f, __l.prev);
-						__sz() = 0;
-						while(__f != __l)
-						{
-							__list_node!(value_tp, void_pointer)* __np = __f.__as_node();
-							__f = __f.next;
-							__delete_node(__np);
-						}
-					}
-				}
-
-				void __delete_node(__list_node!(value_tp, void_pointer)* __node)
-				{
-					__node_allocator __alloc = __node_alloc();
-					destroy!false(&(__node.__get_value));
-					destroy!false(&(*__node));
-					__alloc.deallocate(__node, 1);
-				}
-					
-
-			}	
+				
 			__list_imp!(value_type, allocator_type) base;
 		}
 }
 
+
+private:
+version(CppRuntime_Clang)
+{
+extern(C++, (listNamespace)):
+
+
+extern(C++) struct __list_node_base(Tp, Voidptr)
+{
+	__list_node_base* prev;
+	__list_node_base* next;
+
+	__list_node_base* __self()
+	{
+		__list_node_base* self = &this;
+		return self;
+	}
+
+	__list_node!(Tp, void*)* __as_node()
+	{
+		return cast(__list_node!(Tp, void*)*)__self;
+	}
+
+
+
+}
+
+
+extern(C++)struct __list_node(Tp, _Voidptr)
+{
+	__list_node_base!(Tp, void*) base1;
+private:
+	union {
+		Tp __value;
+	};
+
+public:
+	ref Tp __get_value()
+	{
+		return __value;
+	}
+}
+
+
+
+
+extern(C++, class) struct __list_imp(Tp, Alloc)
+{
+	alias value_tp = Tp;
+	alias _alloc_traits = allocator_traits!(allocator_type);
+	alias void_pointer = void*;
+	//alias __rebind_alloc(Traits, Tp) = Traits.rebind_alloc!(Tp);
+
+
+	//i can just use size_t here but 
+	alias size_type = allocator_traits!(allocator_type).size_type;
+	alias __node_type = __list_node!(value_tp, void_pointer);
+	alias __node_allocator = _alloc_traits.rebind_alloc!(__node_type);
+
+
+	import stdcpp.xutility: __compressed_pair;
+	__list_node_base!(value_tp, void_pointer) __end_;
+	__compressed_pair!(size_type, __node_allocator) __size_alloc_;
+
+	ref inout(size_type) __sz() nothrow inout
+	{
+		return __size_alloc_.first();
+	}
+
+	ref inout(__node_allocator) __node_alloc() inout nothrow
+	{
+		return __size_alloc_.second();
+	}
+
+	bool empty() const nothrow	{return __sz() == 0; }
+
+	void __unlink_nodes(__list_node_base!(value_tp,void_pointer)* __f, __list_node_base!(value_tp, void_pointer)* __l) nothrow
+	{
+		__f.prev.next = __l.next;
+		__l.next.prev = __f.prev;
+	}
+/*
+	__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
+	{
+		return cast(__list_node_base!(value_tp, void_pointer)*)cast(void*)(__end_).__self();
+	}
+*/
+
+	void clear() nothrow;
+/*	{
+		if(!empty)
+		{
+			__list_node_base!(value_tp, void_pointer)* __f = __end_.next;
+			__list_node_base!(value_tp, void_pointer)* __l = __end_as_link();
+			__unlink_nodes(__f, __l.prev);
+			__sz() = 0;
+			while(__f != __l)
+			{
+				__list_node!(value_tp, void_pointer)* __np = __f.__as_node();
+				__f = __f.next;
+				__delete_node(__np);
+			}
+		}
+	}
+*/
+/*
+
+	void __delete_node(__list_node!(value_tp, void_pointer)* __node)
+	{
+		__node_allocator __alloc = __node_alloc();
+		destroy!false(&(__node.__get_value));
+		destroy!false(&(*__node));
+		__alloc.deallocate(__node, 1);
+	}
+*/
+					
+
+}
+}
