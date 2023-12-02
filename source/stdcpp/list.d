@@ -460,13 +460,6 @@ extern(C++, class) struct list(Type, Allocator)
 			size_type unique(U)(U p);
 
 		private:
-/*
-			struct node
-			{
-				node* prev;
-				node* next;
-			}
-*/
 
 			extern(C++) struct __list_node_base(Tp, Voidptr)
 			{
@@ -505,16 +498,6 @@ extern(C++, class) struct list(Type, Allocator)
 			}
 
 
-/*			extern(C++, class) __list_iterator(Tp, Voidptr)
-			{
-				__list_node_base!(Tp, void*) __ptr;
-
-				this(__list_node_base!(Tp, void*) *ptr) nothrow
-				{
-					__ptr = ptr;
-				}
-			}
-*/
 			extern(C++, class) struct __list_imp(Tp, Alloc)
 			{
 				alias value_tp = Tp;
@@ -554,11 +537,11 @@ extern(C++, class) struct list(Type, Allocator)
 				__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
 				{
 					__list_node_base!(value_tp, void_pointer) __n = cast(__list_node_base!(value_tp, void_pointer))(__end_).self();
-					return cast(__list_node_base!(value_tp, void*)*)(cast(void*)(ref __n));
+					return cast(__list_node_base!(value_tp, void*)*)(cast(void*)(__n));
 					//return cast(__list_node_base!(value_tp, void_pointer)*)(__end_).next;
 				}
 
-				void clear() nothrow;
+				void clear() nothrow
 				{
 					if(!empty)
 					{
