@@ -536,8 +536,8 @@ extern(C++, class) struct list(Type, Allocator)
 
 				__list_node_base!(value_tp, void_pointer)* __end_as_link() const nothrow
 				{
-					__list_node_base!(value_tp, void_pointer) __n = cast(__list_node_base!(value_tp, void_pointer))(__end_).self();
-					return cast(__list_node_base!(value_tp, void*)*)(cast(void*)(__n));
+					__list_node_base!(value_tp, void_pointer) __n = cast(__list_node_base!(value_tp, void_pointer))(__end_).__self();
+					return cast(__list_node_base!(value_tp, void*)*)(cast(void*)(__n*));
 					//return cast(__list_node_base!(value_tp, void_pointer)*)(__end_).next;
 				}
 
@@ -549,7 +549,7 @@ extern(C++, class) struct list(Type, Allocator)
 						__list_node_base!(value_tp, void_pointer)* __l = __end_as_link();
 						__unlink_nodes(__f, __l.prev);
 						__sz() = 0;
-						while(__f != __L)
+						while(__f != __l)
 						{
 							__list_node!(value_tp, void_pointer)* __np = __f.__as_node();
 							__f = __f.next;
@@ -560,10 +560,10 @@ extern(C++, class) struct list(Type, Allocator)
 
 				void __delete_node(__list_node!(value_tp, void_pointer)* __node)
 				{
-					ref __node_allocator __alloc = __node_alloc();
-					destroy(&(__node.__get_value));
-					destroy(&(*__node));
-					allocator!(__node_type).deallocate(__node, 1);
+					__node_allocator __alloc = __node_alloc();
+					destroy!false(&(__node.__get_value));
+					destroy!false(&(*__node));
+					__alloc.deallocate(__node, 1);
 				}
 					
 
