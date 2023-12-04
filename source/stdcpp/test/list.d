@@ -32,4 +32,12 @@ unittest
 	cp_obj.remove(45);
 	cp_obj.clear();
 	assert(cp_obj.empty == 1);
+
+	auto new_list = list!int(7);
+	assert(new_list.size == 7);
+	assert(new_list.front == 0);
+	assert(new_list.empty == 0);
+	assert(new_list.back == 0);
+	new_list.clear();
+	assert(new_list.empty == 1);
 }
