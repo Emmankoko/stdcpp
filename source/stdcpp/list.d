@@ -314,11 +314,12 @@ extern(C++, class) struct list(Type, Allocator)
 		}
 		else version(CppRuntime_Microsoft)
 		{
-			this(def)
+			/*this(def)
 			{
 				allocator!Type alloc_instance = allocator!(Type).init;
 				this(alloc_instance);
 			}
+			*/
 
 
 			 //allocator ctor
@@ -330,49 +331,50 @@ extern(C++, class) struct list(Type, Allocator)
 			 //list(n,value) ctor
 			this(size_type __n, ref const value_type value, ref const allocator!Type);
 
-			extern(D) this(size_type n, const value_type element)
+		/*	extern(D) this(size_type n, const value_type element)
 			{
 				allocator!Type alloc_instance = allocator!(Type).init;
 				this(n, element, alloc_instance);
 			}
-
+			*/
 			this(ref const list!Type other, ref const allocator!Type);
 
 			//list(n) ctor
 			this(size_type __n, ref const allocator!Type);
 
-			extern(D) this(size_type n)
-			{
-				allocator!Type alloc_instance = allocator!(Type).init;
-				this(n, alloc_instance);
-			}
+			this(size_type n);
 
 //			~this();
 
-			extern(D) void assign(size_type n, const value_type item)
+			/*extern(D) void assign(size_type n, const value_type item)
 			{
 				this.assign(n, item);
 			}
+			*/
 
-			extern(D) void push_back(const Type item)
+			/*extern(D) void push_back(const Type item)
 			{
 				this.push_back(item);
 			}
+			*/
 
-			extern(D) void push_front(const Type item)
+			/*extern(D) void push_front(const Type item)
 			{
 				this.push_front(item);
 			}
+			*/
 
-			extern(D) void resize(size_type n, const value_type item)
+			/*extern(D) void resize(size_type n, const value_type item)
 			{
 				this.resize(n, item);
 			}
+			*/
 
-			extern(D) void remove(const value_type item)
+			/*extern(D) void remove(const value_type item)
 			{
 				this.remove(item);
 			}
+			*/
 
 /*			extern(D) size_type remove(const value_type item)
 			{
