@@ -25,7 +25,7 @@ on:
     branches:
       - v*.*.x
        #Use this branch name in your fork to test changes
-      - t1
+      - ms-extern
 
 jobs:
   main:
@@ -35,11 +35,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - { name: macos-11, arch: x86_64-apple-darwin }
+          - { name: windows-2019, arch: x86_64 }
         dc:
           - ldc-latest
         target:
-          - { name: clang-13, compiler: clang, cxx-version: 13.0.0 }
+          - { name: msvc-2017, compiler: msvc, cxx-version: 2017 }
 
     # Using a specific version for reproductibility.
     # Feel free to update when a new release has matured.
