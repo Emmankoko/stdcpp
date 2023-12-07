@@ -17,7 +17,7 @@
             "preGenerateCommands": [
 		"cl -c extras/list.cpp"
             ],
-            "sourceFiles": [ "extras/*.obj" ]
+            "sourceFiles": [ "extras/list.obj" ]
         },
     ]
 }
