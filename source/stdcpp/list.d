@@ -5,8 +5,7 @@
  * License: Distributed under the
  *		$(LINK2 http://www.boost.org/LICENSE_1.0.txt, Boost Software License 1.0).
  *		(See accompanying file License)
- * Authors:	Mathias Lang
- *		Emmanuel Nyarko
+ * Authors:	Emmanuel Nyarko
  */
 
 module stdcpp.list;
