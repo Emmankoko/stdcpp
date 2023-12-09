@@ -309,276 +309,260 @@ extern(C++, class) struct list(Type, Allocator)
 
 		}
 		}
-		else version(CppRuntime_Clang)
+	else version(CppRuntime_Clang)
+	{
+		this(def)
 		{
-			this(def)
-			{
-				allocator!Type alloc_instance = allocator!(Type).init;
-				this(alloc_instance);
-			}
+			allocator!Type alloc_instance = allocator!(Type).init;
+			this(alloc_instance);
+		}
 
 
 			 //allocator ctor
-			this(ref const allocator!Type);
+		this(ref const allocator!Type);
 
 			//copy ctor
-			this(ref const list!Type __x);
+		this(ref const list!Type __x);
 
-			 //list(n,value) ctor
-			this(size_type __n, ref const value_type value, ref const allocator!Type);
+		 //list(n,value) ctor
+		this(size_type __n, ref const value_type value, ref const allocator!Type);
 
-			extern(D) this(size_type n, const value_type element)
-			{
-				allocator!Type alloc_instance = allocator!(Type).init;
-				this(n, element, alloc_instance);
-			}
-
-			this(ref const list!Type other, ref const allocator!Type);
-
-			//list(n) ctor
-			this(size_type __n, ref const allocator!Type);
-
-			this(size_type n);
-
-			//this has to be commented out as it has been removed from cxx14 on clang 
-/*			extern(D) this(size_type n)
-			{
-				allocator!Type alloc_instance = allocator!(Type).init;
-				this(n, alloc_instance);
-			}
-*/
-
-			~this();
-
-			extern(D) void assign(size_type n, const value_type item)
-			{
-				this.assign(n, item);
-			}
-
-			extern(D) void push_back(const Type item)
-			{
-				this.push_back(item);
-			}
-
-			extern(D) void push_front(const Type item)
-			{
-				this.push_front(item);
-			}
-
-			extern(D) void resize(size_type n, const value_type item)
-			{
-				this.resize(n, item);
-			}
-
-			extern(D) void remove(const value_type item)
-			{
-				this.remove(item);
-			}
-
-/*			extern(D) size_type remove(const value_type item)
-			{
-				return this.remove(item);
-			}
-*/
-			ref list opAssign(ref const list!Type other);
-
-			void assign(size_type count, ref const value_type value);
-
-			//const nothrow since C++11
-			allocator_type get_allocator() const nothrow;
-
-			ref value_type front()
-			{
-				assert(!empty, "list.front called on empty list");
-				return base.__end_.next.__as_node.__get_value;
-			}
-
-			ref value_type back()
-			{
-				assert(!empty, "list.back called on empty list");
-				return base.__end_.prev.__as_node.__get_value;
-			}
-
-			pointer begin() nothrow;
-
-			pointer end() nothrow;
-
-			//const nothrow since c++11
-			bool empty() const nothrow
-			{
-				return base.empty();
-			}
-
-			size_type size() const nothrow
-			{
-				return base.__sz();
-			}
-
-			void clear() nothrow
-			{
-				base.clear();
-			}
-
-			//insert halted for now
-
-			void push_back(ref const Type val);
-
-			void pop_back();
-
-			void push_front(ref const value_type val);
-
-			void pop_front();
-
-			void resize(size_type count);
-
-			void resize(size_type count, ref const value_type val);
-
-			void swap(ref const list!Type other) nothrow;
-
-			void merge( ref const list!Type other);
-
-			void merge(U)(ref const list!Type other, U comp);
-
-			void remove(const ref value_type val);
-
-			void reverse() nothrow;
-
-			void sort();
-
-			void sort(U)(U comp);
-
-			void unique();
-
-			void unique(U)(U p);
-
-			size_type unique();
-
-			size_type unique(U)(U p);
-
-		private:
-
-
-				
-			__list_imp!(value_type, allocator!Type) base;
-		}
-		else version(CppRuntime_Microsoft)
+		extern(D) this(size_type n, const value_type element)
 		{
-						 //allocator ctor
-			this(ref const allocator!Type);
+			allocator!Type alloc_instance = allocator!(Type).init;
+			this(n, element, alloc_instance);
+		}
 
-			//copy ctor
-			this(ref const list!Type __x);
-
-			 //list(n,value) ctor
-			this(size_type __n, ref const value_type value, ref const allocator!Type);
-
-			extern(D) this(size_type n, const value_type element)
-			{
-				allocator!Type alloc_instance = allocator!(Type).init;
-				this(n, element, alloc_instance);
-			}
-
-			this(ref const list!Type other, ref const allocator!Type);
+		this(ref const list!Type other, ref const allocator!Type);
 
 			//list(n) ctor
-			this(size_type __n, ref const allocator!Type);
+		this(size_type __n, ref const allocator!Type);
 
+		this(size_type n);
 
-			this(size_type n);
+		~this();
 
-			~this();
+		extern(D) void assign(size_type n, const value_type item)
+		{
+			this.assign(n, item);
+		}
 
-			extern(D) void assign(size_type n, const value_type item)
-			{
-				this.assign(n, item);
-			}
+		extern(D) void push_back(const Type item)
+		{
+			this.push_back(item);
+		}
 
-			extern(D) void push_back(const Type item)
-			{
-				this.push_back(item);
-			}
+		extern(D) void push_front(const Type item)
+		{
+			this.push_front(item);
+		}
 
-			extern(D) void push_front(const Type item)
-			{
-				this.push_front(item);
-			}
+		extern(D) void resize(size_type n, const value_type item)
+		{
+			this.resize(n, item);
+		}
 
-			extern(D) void resize(size_type n, const value_type item)
-			{
-				this.resize(n, item);
-			}
+		extern(D) void remove(const value_type item)
+		{
+			this.remove(item);
+		}
 
-			extern(D) void remove(const value_type item)
-			{
-				this.remove(item);
-			}
+		ref list opAssign(ref const list!Type other);
 
-			ref list opAssign(ref const list!Type other);
-
-			void assign(size_type count, ref const value_type value);
+		void assign(size_type count, ref const value_type value);
 
 			//const nothrow since C++11
-			allocator_type get_allocator() const nothrow;
+		allocator_type get_allocator() const nothrow;
 
-			ref value_type front();
+		ref value_type front()
+		{
+			assert(!empty, "list.front called on empty list");
+			return base.__end_.next.__as_node.__get_value;
+		}
 
-			ref value_type back();
+		ref value_type back()
+		{
+			assert(!empty, "list.back called on empty list");
+			return base.__end_.prev.__as_node.__get_value;
+		}
 
-			pointer begin() nothrow;
+		pointer begin() nothrow;
 
-			pointer end() nothrow;
+		pointer end() nothrow;
 
 			//const nothrow since c++11
-			bool empty() const nothrow;
-
-			size_type size() const nothrow;
-
-			void clear() nothrow;
-
-			//insert halted for now
-
-			void push_back(ref const Type val);
-
-			void pop_back();
-
-			void push_front(ref const value_type val);
-
-			void pop_front();
-
-			void resize(size_type count);
-
-			void resize(size_type count, ref const value_type val);
-
-			void swap(ref const list!Type other) nothrow;
-
-			void merge( ref const list!Type other);
-
-			void merge(U)(ref const list!Type other, U comp);
-
-			void remove(const ref value_type val);
-
-			void reverse() nothrow;
-
-			void sort();
-
-			void sort(U)(U comp);
-
-			void unique();
-
-			void unique(U)(U p);
-
-			size_type unique();
-
-			size_type unique(U)(U p);
-
-		private:
-			struct node
-			{
-				node* prev;
-				node* next;
-			}
-			node A;
+		bool empty() const nothrow
+		{
+			return base.empty();
 		}
+
+		size_type size() const nothrow
+		{
+			return base.__sz();
+		}
+
+		void clear() nothrow
+		{
+			base.clear();
+		}
+
+		void push_back(ref const Type val);
+
+		void pop_back();
+
+		void push_front(ref const value_type val);
+
+		void pop_front();
+
+		void resize(size_type count);
+
+		void resize(size_type count, ref const value_type val);
+
+		void swap(ref const list!Type other) nothrow;
+
+		void merge( ref const list!Type other);
+
+		void merge(U)(ref const list!Type other, U comp);
+
+		void remove(const ref value_type val);
+
+		void reverse() nothrow;
+
+		void sort();
+
+		void sort(U)(U comp);
+
+		void unique();
+
+		void unique(U)(U p);
+
+		size_type unique();
+
+		size_type unique(U)(U p);
+
+	private:
+
+
+		__list_imp!(value_type, allocator!Type) base;
+		}
+	else version(CppRuntime_Microsoft)
+	{
+					 //allocator ctor
+		this(ref const allocator!Type);
+
+		//copy ctor
+		this(ref const list!Type __x);
+
+		 //list(n,value) ctor
+		this(size_type __n, ref const value_type value, ref const allocator!Type);
+
+		extern(D) this(size_type n, const value_type element)
+		{
+			allocator!Type alloc_instance = allocator!(Type).init;
+			this(n, element, alloc_instance);
+		}
+
+		this(ref const list!Type other, ref const allocator!Type);
+
+		//list(n) ctor
+		this(size_type __n, ref const allocator!Type);
+
+
+		this(size_type n);
+
+		~this();
+
+		extern(D) void assign(size_type n, const value_type item)
+		{
+			this.assign(n, item);
+		}
+
+		extern(D) void push_back(const Type item)
+		{
+			this.push_back(item);
+		}
+
+		extern(D) void push_front(const Type item)
+		{
+			this.push_front(item);
+		}
+
+		extern(D) void resize(size_type n, const value_type item)
+		{
+			this.resize(n, item);
+		}
+
+		extern(D) void remove(const value_type item)
+		{
+			this.remove(item);
+		}
+
+		ref list opAssign(ref const list!Type other);
+
+		void assign(size_type count, ref const value_type value);
+
+			//const nothrow since C++11
+		allocator_type get_allocator() const nothrow;
+
+		ref value_type front();
+
+		ref value_type back();
+
+		pointer begin() nothrow;
+
+		pointer end() nothrow;
+
+		//const nothrow since c++11
+		bool empty() const nothrow;
+
+		size_type size() const nothrow;
+
+		void clear() nothrow;
+
+		//insert halted for now
+
+		void push_back(ref const Type val);
+
+		void pop_back();
+
+		void push_front(ref const value_type val);
+
+		void pop_front();
+
+		void resize(size_type count);
+
+		void resize(size_type count, ref const value_type val);
+
+		void swap(ref const list!Type other) nothrow;
+
+		void merge( ref const list!Type other);
+
+		void merge(U)(ref const list!Type other, U comp);
+
+		void remove(const ref value_type val);
+
+		void reverse() nothrow;
+
+		void sort();
+
+		void sort(U)(U comp);
+
+		void unique();
+
+		void unique(U)(U p);
+
+		size_type unique();
+
+		size_type unique(U)(U p);
+
+	private:
+		struct node
+		{
+			node* prev;
+			node* next;
+		}
+		node A;
+	}
 			
 			
 }
