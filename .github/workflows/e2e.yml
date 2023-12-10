@@ -25,7 +25,7 @@ on:
     branches:
       - v*.*.x
        #Use this branch name in your fork to test changes
-      - t1
+      - Set1
 
 jobs:
   main:
@@ -35,11 +35,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - { name: macos-11, arch: x86_64-apple-darwin }
+          - { name: ubuntu-20.04, arch: x86_64-linux-gnu-ubuntu-20.04 }
         dc:
           - ldc-latest
         target:
-          - { name: clang-13, compiler: clang, cxx-version: 13.0.0 }
+          - { name: g++-9, compiler: g++, cxx-version: 9.4.0 }
 
     # Using a specific version for reproductibility.
     # Feel free to update when a new release has matured.
