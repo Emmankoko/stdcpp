@@ -127,48 +127,39 @@ extern(C++, class) struct set(Key, compare, Alloc)
 			return lower_bound!(Y)(z);
 		}
 
-		
-        pointer upper_bound(K)(ref const K x);
+		pointer upper_bound(K)(ref const K x);
 
-        extern(D) pointer upper_bound(Y)(const Y z)
-        {
-            return upper_bound!(Y)(z);
-        }
-
+		extern(D) pointer upper_bound(Y)(const Y z)
+		{
+			return upper_bound!(Y)(z);
+		}
 		//observers
 
 		key_compare key_comp() const;
 
 		//value compare next
-	
 private:
-
 	enum _Rb_tree_color { red = false, black = true};
     struct _Tree_node
-    {
+	{
 		_Rb_tree_color _M_color;
-        _Tree_node* parent;
-        _Tree_node* left;
-        _Tree_node* right;
-    }
+		_Tree_node* parent;
+		_Tree_node* left;
+		_Tree_node* right;
+	}
 
 	struct _Rb_tree_key_compare(U)
 	{
 		U _M_key_compare;
 	}
 
-
 	struct _Rb_tree
 	{
-
 		_Tree_node _M_header;
 		size_type node_count;
 		_Rb_tree_key_compare!compare a;
+	}
+		_Rb_tree _M_t;
 
-	} 
-	_Rb_tree _M_t;
-
-}
-
-
+	}
 }
