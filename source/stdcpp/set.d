@@ -140,7 +140,7 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		//value compare next
 private:
 	enum _Rb_tree_color { red = false, black = true};
-    struct _Tree_node
+	struct _Tree_node
 	{
 		_Rb_tree_color _M_color;
 		_Tree_node* parent;
