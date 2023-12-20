@@ -420,7 +420,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 		void merge(U)(ref list!Type other, U comp);
 
-		void remove(const ref value_type val);
+		//void remove(const ref value_type val);
 
 		void reverse() nothrow;
 
