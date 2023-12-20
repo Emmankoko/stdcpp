@@ -39,7 +39,7 @@ unittest
 	assert(q.size == 6); // expects 6
 	q.swap(p); //q is now = 5,7 && p = 3,3,0,0,6,3
 	assert(p.front == 3); // expects 3
-	writeln(q.front == 5); //expects 5, q is now 5,7
+	assert(q.front == 5); //expects 5, q is now 5,7
 	assert(p.size == 6); // expects 6
 	auto N =list!int(p); //copy ctor
 	assert(N.size == 6); // expects 6
