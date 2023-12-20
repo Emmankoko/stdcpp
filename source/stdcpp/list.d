@@ -225,11 +225,11 @@ extern(C++, class) struct list(Type, Allocator)
 			}
 
 
-/*			extern(D) size_type remove(const value_type item)
+			extern(D) size_type remove(const value_type item)
 			{
 				return this.remove(item);
 			}
-*/
+
 			ref list opAssign(ref const list!Type other);
 
 			void assign(size_type count, ref const value_type value);
@@ -276,7 +276,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 			void merge(U)(ref list!Type other, U comp);
 
-		//	void remove(const ref value_type val);
+			void remove(const ref value_type val);
 
 //			size_type remove(const ref value_type val);
 
@@ -420,7 +420,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 		void merge(U)(ref list!Type other, U comp);
 
-		//void remove(const ref value_type val);
+		void remove(const ref value_type val);
 
 		void reverse() nothrow;
 
@@ -488,10 +488,11 @@ extern(C++, class) struct list(Type, Allocator)
 			this.resize(n, item);
 		}
 
-		extern(D) void remove(const value_type item)
+		/*extern(D) void remove(const value_type item)
 		{
 			this.remove(item);
 		}
+		*/
 
 		ref list opAssign(ref const list!Type other);
 
@@ -535,7 +536,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 		void merge(U)(ref list!Type other, U comp);
 
-		void remove(const ref value_type val);
+		//void remove(const ref value_type val);
 
 		void reverse() nothrow;
 
