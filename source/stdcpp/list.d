@@ -224,10 +224,6 @@ extern(C++, class) struct list(Type, Allocator)
 				this.resize(n, item);
 			}
 
-			extern(D) void remove(const value_type item)
-			{
-				this.remove(item);
-			}
 
 /*			extern(D) size_type remove(const value_type item)
 			{
@@ -280,7 +276,7 @@ extern(C++, class) struct list(Type, Allocator)
 
 			void merge(U)(ref list!Type other, U comp);
 
-			void remove(const ref value_type val);
+		//	void remove(const ref value_type val);
 
 //			size_type remove(const ref value_type val);
 
