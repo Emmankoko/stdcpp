@@ -142,11 +142,11 @@ extern(C++, class) struct list(Type, Allocator)
 
 			void pop_front();
 
-			void swap(ref const list!Type other);
+			void swap(ref list!Type other);
 
-			void merge( ref const list!Type other);
+			void merge( ref list!Type other);
 
-			void merge(U)(ref const list!Type other, U comp);
+			void merge(U)(ref list!Type other, U comp);
 
 			void remove(const ref value_type val);
 
@@ -274,11 +274,11 @@ extern(C++, class) struct list(Type, Allocator)
 
 			void resize(size_type count, ref const value_type val);
 
-			void swap(ref const list!Type other) nothrow;
+			void swap(ref list!Type other) nothrow;
 
-			void merge( ref const list!Type other);
+			void merge( ref list!Type other);
 
-			void merge(U)(ref const list!Type other, U comp);
+			void merge(U)(ref list!Type other, U comp);
 
 			void remove(const ref value_type val);
 
@@ -418,11 +418,11 @@ extern(C++, class) struct list(Type, Allocator)
 
 		void resize(size_type count, ref const value_type val);
 
-		void swap(ref const list!Type other) nothrow;
+		void swap(ref list!Type other) nothrow;
 
-		void merge( ref const list!Type other);
+		void merge( ref list!Type other);
 
-		void merge(U)(ref const list!Type other, U comp);
+		void merge(U)(ref list!Type other, U comp);
 
 		void remove(const ref value_type val);
 
@@ -533,11 +533,11 @@ extern(C++, class) struct list(Type, Allocator)
 
 		void resize(size_type count, ref const value_type val);
 
-		void swap(ref const list!Type other) nothrow;
+		void swap(ref list!Type other) nothrow;
 
-		void merge( ref const list!Type other);
+		void merge( ref list!Type other);
 
-		void merge(U)(ref const list!Type other, U comp);
+		void merge(U)(ref list!Type other, U comp);
 
 		void remove(const ref value_type val);
 
@@ -649,6 +649,29 @@ extern(C++, class) struct __list_imp(Tp, Alloc)
 
 	void clear() nothrow;
 					
-
 }
+
+private:
+	version(CppRuntime_Microsoft)
+	{
+		
+		/*extern(C++) struct _List_node_remove_op
+		{
+			this(ref list) nothrow;
+			_Nodeptr _Transfer_back(const _Nodeptr _Removed);
+
+			~this();
+		}
+		*/
+		extern(C++) struct equal_to(T = void)
+		{
+
+		}
+
+		//might probably be moved to utility 
+		extern(C++) struct less(T = void)
+		{
+
+		}
+	}
 }
