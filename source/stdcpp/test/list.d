@@ -10,8 +10,8 @@ import stdcpp.list;
 unittest
 {
 	auto p =list!int(5);
-    p.push_back(5);
-    assert(p.front == 0);//expects 0
+	p.push_back(5);
+	assert(p.front == 0);//expects 0
 	p.clear();
 	assert(p.empty == true);//expects true
 	assert(p.size == 0);//expects 0
