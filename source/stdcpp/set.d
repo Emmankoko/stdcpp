@@ -40,7 +40,7 @@ extern(C++, class) struct set(Key, compare, Alloc)
 
 	//enum comp { less};
 
-	version(CppRuntime_Gcc)
+	version (CppRuntime_Gcc)
 	{
 		this(const ref allocator!(Key));
 
@@ -172,11 +172,38 @@ extern(C++, class) struct set(Key, compare, Alloc)
 
 		_Rb_tree!(key_type, value_type, _Identity!(value_type), key_compare, Alloc) Rep_type;
 	}
+	else version (CppRuntime_Microsft)
+	{
+		this(const ref allocator!(Key));
+
+		extern(D) this()
+		{
+			less!Key a;
+			allocator!(Key) alloc_instance =  allocator!(Key).init;
+			this(a, alloc_instance);
+		}
+		
+		this(ref const set __x)
+		{
+			allocator!Key alloc_instance = allocator!Key.init;
+			this(__x, alloc_instance);
+		}
+
+		this(const ref compare comp, const ref allocator_type alloc);
+
+		bool empty() const nothrow;
+
+		size_type size() const nothrow;
+
+		void swap(ref set other) nothrow;
+
+		_Tree!(_Tset_traits!(key_type,value_type, allocator_type, false)) tree_instance;
+	}
 }
 
 
 private:
-	version(CppRuntime_Gcc)
+	version (CppRuntime_Gcc)
 	{
 		enum _Rb_tree_color { red = false, black = true};
 		struct _Rb_tree_node_base
@@ -257,5 +284,24 @@ private:
 			inout(pointer) find(const ref _Key __k) inout;
 
 			~this();
+		}
+	}
+	else version (CppRuntime_Microsoft)
+	{
+		extern(C++, class) struct _Tree(_Traits)
+		{
+			enum _Redbl {
+				_Red,
+				_Black,
+			}
+			enum _Strategy : bool {
+				_Copy,
+				_Move,
+			} 
+
+		}
+		extern(C++, class) struct _Tset_traits(_Kty, _Pr, _Alloc, bool _Mf1)
+		{
+
 		}
 	}
