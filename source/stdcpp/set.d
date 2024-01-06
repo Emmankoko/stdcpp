@@ -6,7 +6,7 @@ import stdcpp.xutility : StdNamespace;
 extern(C++, (StdNamespace)):
 
 //will definately be moved(maybe to stdcpp.utilities)
-extern(C++, class) struct less(T)
+extern(C++) struct less(T)
 {
 
 }
@@ -172,32 +172,38 @@ extern(C++, class) struct set(Key, compare, Alloc)
 
 		_Rb_tree!(key_type, value_type, _Identity!(value_type), key_compare, Alloc) Rep_type;
 	}
-	else version (CppRuntime_Microsft)
+	else version (CppRuntime_Microsoft)
 	{
 		this(const ref allocator!(Key));
 
-		extern(D) this()
+		this(const ref compare item)
 		{
-			less!Key a;
 			allocator!(Key) alloc_instance =  allocator!(Key).init;
-			this(a, alloc_instance);
+			this(item, alloc_instance);
 		}
 		
-		this(ref const set __x)
-		{
+		this(ref const set __x);
+	/*	{
 			allocator!Key alloc_instance = allocator!Key.init;
 			this(__x, alloc_instance);
-		}
+	*/	//}
 
 		this(const ref compare comp, const ref allocator_type alloc);
 
-		bool empty() const nothrow;
+		ref set opAssign( const ref set other);
+
+	/*	extern(D) bool empty() const nothrow
+		{
+			return _Mybase.empty;
+		}
+		*/
 
 		size_type size() const nothrow;
 
 		void swap(ref set other) nothrow;
 
-		_Tree!(_Tset_traits!(key_type,value_type, allocator_type, false)) tree_instance;
+		_Tree!(_Tset_traits!(key_type,value_type, allocator_type, false)) _Mybase;
+
 	}
 }
 
@@ -285,11 +291,73 @@ private:
 
 			~this();
 		}
+		
 	}
 	else version (CppRuntime_Microsoft)
 	{
+		extern(C++) struct _Tree_node(_value_type, _voidptr)
+		{
+			alias _Nodeptr = allocator_traits!(allocator!(_value_type)).rebind_alloc!(_Tree_node);
+			_Nodeptr _Left;
+			_Nodeptr _Parent;
+			_Nodeptr _Right;
+			char _Color;
+			char _Isnil;
+
+			enum _Redbl {
+				_Red,
+				_Black
+			}
+
+		}
+
+		extern(C++, class) struct _Tree_val(_Val_types)
+		{
+			
+			//alias _Nodeptr = _Val_types._Nodeptr;
+			
+			//_Nodeptr _Myhead;
+			size_t _Mysize;
+			
+		}
+		extern(C++) struct _Tree_simple_types(_Ty)
+		{
+			alias _Node = _Tree_node!(_Ty, void*);
+			alias _Nodeptr =  _Node*;
+		}
+
+		extern(C++) struct _Tree_iter_types(_Value_type, _size_type, _Diff_type, _Pointer, _Const_pointer, _Nodeptr_type)
+		{
+			alias value_type = _Value_type;
+			alias size_type = _size_type;
+			alias difference_type = _Diff_type;
+			alias pointer = _Pointer;
+			alias const_pointer = _Const_pointer;
+			alias _Nodeptr = _Nodeptr_type;
+		}
+		//might be moved to type_traits.d
+		alias conditional(_if, _Then) = coditional!(false, _if, _Then);
+		extern(C++) struct conditional(bool _Cond, _if, _Then)
+		{
+			alias type = _if;
+
+			static if (_Cond == false)
+				alias type = _Then; 
+		}
+
 		extern(C++, class) struct _Tree(_Traits)
 		{
+			alias key_compare = _Traits.key_compare;
+			alias value_type = _Traits.value_type;
+			alias allocator_type = _Traits.allocator_type;
+			alias _Node = _Tree_node!(value_type, void*);
+			alias _Alnode = allocator_traits!(allocator_type).rebind_alloc!(_Node);
+			alias _Alnode_traits = allocator_traits!(_Alnode);
+			alias _Nodeptr = _Alnode_traits.pointer;
+			alias size_type = allocator_traits!(allocator_type).rebind_alloc!(value_type);
+			alias _Scary_val = _Tree_val!(conditional!(true, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
+
+
 			enum _Redbl {
 				_Red,
 				_Black,
@@ -297,11 +365,24 @@ private:
 			enum _Strategy : bool {
 				_Copy,
 				_Move,
-			} 
+			}
 
+			ref _Tree opAssign(const ref _Tree _Right);
+
+			bool empty() const nothrow;
+
+			import stdcpp.xutility : _Compressed_pair;
+			_Compressed_pair!(key_compare, _Compressed_pair!(_Alnode, _Scary_val)) _Mypair;
+
+			//~this() nothrow;
 		}
 		extern(C++, class) struct _Tset_traits(_Kty, _Pr, _Alloc, bool _Mf1)
 		{
+			alias key_type = _Kty;
+			alias value_type = _Kty;
+			alias key_compare = _Pr;
+			alias allocator_type = _Alloc;
 
 		}
+
 	}
