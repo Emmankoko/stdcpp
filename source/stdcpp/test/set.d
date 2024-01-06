@@ -10,10 +10,14 @@ import stdcpp.set;
 
 unittest
 {
-	//less!int a;
-	auto p = set!int();
-	set!int q = p;
+	less!int a;
+	set!int p = a;
+	assert(p.sizeof == 16);
+	set!int q = a;
 	q.swap(p);
+	set!int j = a;
+	q = j; // opAssign
+	//set!int q = p;
 
 //	assert(p.sizeof == 8);
 //	p.insert(5);
