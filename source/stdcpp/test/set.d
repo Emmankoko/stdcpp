@@ -13,16 +13,13 @@ unittest
 	less!int a;
 	set!int p = a;
 	assert(p.sizeof == 16);
-	set!int q = a;
+	set!int q = a; // copy ctor
 	q.swap(p);
 	set!int j = a;
 	q = j; // opAssign
-	//set!int q = p;
-
-//	assert(p.sizeof == 8);
-//	p.insert(5);
-//	assert(p.size() == 0);
-//	assert(p.empty() == 1);
+	p.clear;
+	assert(p.size == 0);
+	assert(p.empty == 1);
 /*	p.erase(5);
 	p.insert(6);
 	p.clear;
