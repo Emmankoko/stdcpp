@@ -183,14 +183,21 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 		
 		this(ref const set __x);
-	/*	{
-			allocator!Key alloc_instance = allocator!Key.init;
-			this(__x, alloc_instance);
-	*/	//}
 
 		this(const ref compare comp, const ref allocator_type alloc);
 
 		ref set opAssign( const ref set other);
+
+		void clear() nothrow
+		{
+			this._Mybase.clear();
+		}
+		/*
+		pair!(pointer, bool) insert( const Key val)
+		{
+			return this._Mybase.insert(val);
+		}
+		*/
 
 	/*	extern(D) bool empty() const nothrow
 		{
@@ -198,11 +205,24 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 		*/
 
-		size_type size() const nothrow;
+		size_type size() const nothrow
+		{
+			return this._Mybase.size();
+		}
 
+		size_type max_size() const nothrow
+		{
+			return this._Mybase.max_size();
+		}
+	
+		bool empty() const nothrow
+		{
+			return this._Mybase.empty();
+		}
+	
 		void swap(ref set other) nothrow;
 
-		_Tree!(_Tset_traits!(key_type,value_type, allocator_type, false)) _Mybase;
+		_Tree!(_Tset_traits!(key_type,less!key_type, allocator_type, false)) _Mybase;
 
 	}
 }
@@ -295,6 +315,7 @@ private:
 	}
 	else version (CppRuntime_Microsoft)
 	{
+		extern(C++) T* addressof(T)( ref T arg ) nothrow;
 		extern(C++) struct _Tree_node(_value_type, _voidptr)
 		{
 			alias _Nodeptr = allocator_traits!(allocator!(_value_type)).rebind_alloc!(_Tree_node);
@@ -311,13 +332,26 @@ private:
 
 		}
 
+		enum _Tree_child { _Right, _Left, _Unused};
+
+		extern(C++) struct _Tree_id(_Nodeptr)
+		{
+			_Nodeptr _Parent;
+			_Tree_child _Child;
+		}
+
+		extern(C++) struct _Tree_find_result(_Nodeptr)
+		{
+			_Tree_id!(_Nodeptr) _Location;
+			_Nodeptr _Bound;
+		}
+
 		extern(C++, class) struct _Tree_val(_Val_types)
 		{
-			
-			//alias _Nodeptr = _Val_types._Nodeptr;
-			
-			//_Nodeptr _Myhead;
-			size_t _Mysize;
+			alias _Nodeptr = _Val_types._Nodeptr;
+			alias size_type = _Val_types.size_type;
+			_Nodeptr _Myhead;
+			size_type _Mysize;
 			
 		}
 		extern(C++) struct _Tree_simple_types(_Ty)
@@ -336,27 +370,28 @@ private:
 			alias _Nodeptr = _Nodeptr_type;
 		}
 		//might be moved to type_traits.d
-		alias conditional(_if, _Then) = coditional!(false, _if, _Then);
-		extern(C++) struct conditional(bool _Cond, _if, _Then)
-		{
-			alias type = _if;
-
-			static if (_Cond == false)
-				alias type = _Then; 
+		alias conditional_t(bool _Test, _Ty1, _Ty2) = conditional!(_Test, _Ty1, _Ty2).type;
+		extern(C++) struct conditional(bool _Cond, _Ty1, _Ty2)
+		{	
+			static if(_Cond == true)
+				alias type = _Ty1;
+			else
+				alias type = _Ty2;
 		}
 
 		extern(C++, class) struct _Tree(_Traits)
 		{
 			alias key_compare = _Traits.key_compare;
 			alias value_type = _Traits.value_type;
+			alias key_type = _Traits.value_type;
 			alias allocator_type = _Traits.allocator_type;
 			alias _Node = _Tree_node!(value_type, void*);
 			alias _Alnode = allocator_traits!(allocator_type).rebind_alloc!(_Node);
 			alias _Alnode_traits = allocator_traits!(_Alnode);
 			alias _Nodeptr = _Alnode_traits.pointer;
-			alias size_type = allocator_traits!(allocator_type).rebind_alloc!(value_type);
-			alias _Scary_val = _Tree_val!(conditional!(true, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
-
+			alias size_type = allocator_traits!(allocator_type).rebind_alloc!(value_type).size_type;
+			alias _Scary_val = _Tree_val!(conditional_t!(false, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
+			alias pointer = value_type*;
 
 			enum _Redbl {
 				_Red,
@@ -369,10 +404,43 @@ private:
 
 			ref _Tree opAssign(const ref _Tree _Right);
 
-			bool empty() const nothrow;
+			pair!(pointer, bool) insert(const ref value_type _Val);
 
+			inout(_Scary_val)* _Get_scary() inout nothrow
+			{
+				return &(_Mypair._Myval2._Myval2);
+			}
+
+			ref inout(key_compare) _Getcomp() inout nothrow;
+
+			void clear() nothrow;
+
+			size_type size() const nothrow
+			{
+				return _Get_scary._Mysize;
+			}
+
+			key_compare key_comp() const;
+
+			size_type max_size() const nothrow;
+		
+			bool empty() const nothrow
+			{
+				return _Get_scary._Mysize == 0;
+			}
+
+		/*	bool contains(const ref key_type _Keyval) const
+			{
+				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
+			}
+
+			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const;
+
+			bool _Lower_bound_duplicate(_Keyty)(const _Nodeptr _Bound, ref const _Keyty _Keyval) const;
+		*/
 			import stdcpp.xutility : _Compressed_pair;
 			_Compressed_pair!(key_compare, _Compressed_pair!(_Alnode, _Scary_val)) _Mypair;
+			
 
 			//~this() nothrow;
 		}
