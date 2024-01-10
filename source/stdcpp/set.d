@@ -199,12 +199,6 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 		*/
 
-	/*	extern(D) bool empty() const nothrow
-		{
-			return _Mybase.empty;
-		}
-		*/
-
 		size_type size() const nothrow
 		{
 			return this._Mybase.size();
@@ -221,6 +215,11 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 	
 		void swap(ref set other) nothrow;
+
+		bool contains(ref const key_type key) const
+		{
+			return this._Mybase.contains(key);
+		}
 
 		_Tree!(_Tset_traits!(key_type,less!key_type, allocator_type, false)) _Mybase;
 
@@ -340,7 +339,7 @@ private:
 			_Tree_child _Child;
 		}
 
-		extern(C++) struct _Tree_find_result(_Nodeptr)
+		extern(C++, "std") struct _Tree_find_result(_Nodeptr)
 		{
 			_Tree_id!(_Nodeptr) _Location;
 			_Nodeptr _Bound;
@@ -429,15 +428,18 @@ private:
 				return _Get_scary._Mysize == 0;
 			}
 
-		/*	bool contains(const ref key_type _Keyval) const
+			bool contains(const ref key_type _Keyval) const
 			{
 				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
 			}
 
-			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const;
+		protected:
 
+			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const;
+		
 			bool _Lower_bound_duplicate(_Keyty)(const _Nodeptr _Bound, ref const _Keyty _Keyval) const;
-		*/
+
+		public:
 			import stdcpp.xutility : _Compressed_pair;
 			_Compressed_pair!(key_compare, _Compressed_pair!(_Alnode, _Scary_val)) _Mypair;
 			
