@@ -339,7 +339,7 @@ private:
 			_Tree_child _Child;
 		}
 
-		extern(C++, "std") struct _Tree_find_result(_Nodeptr)
+		extern(C++) struct _Tree_find_result(_Nodeptr)
 		{
 			_Tree_id!(_Nodeptr) _Location;
 			_Nodeptr _Bound;
