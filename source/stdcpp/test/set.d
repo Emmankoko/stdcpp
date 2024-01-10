@@ -20,4 +20,6 @@ unittest
 	p.clear;
 	assert(p.size == 0);
 	assert(p.empty == 1);
+	assert(p.key_comp() == a);
+
 }

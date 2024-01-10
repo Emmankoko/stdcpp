@@ -215,10 +215,15 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 	
 		void swap(ref set other) nothrow;
-
+		/*
 		bool contains(ref const key_type key) const
 		{
 			return this._Mybase.contains(key);
+		}
+		*/
+		key_compare key_comp() const
+		{
+			return this._Mybase.key_comp();
 		}
 
 		_Tree!(_Tset_traits!(key_type,less!key_type, allocator_type, false)) _Mybase;
@@ -318,11 +323,13 @@ private:
 		extern(C++) struct _Tree_node(_value_type, _voidptr)
 		{
 			alias _Nodeptr = allocator_traits!(allocator!(_value_type)).rebind_alloc!(_Tree_node);
+			alias value_type = _value_type;
 			_Nodeptr _Left;
 			_Nodeptr _Parent;
 			_Nodeptr _Right;
 			char _Color;
 			char _Isnil;
+			//_value_type _Myval = value_type;
 
 			enum _Redbl {
 				_Red,
@@ -411,7 +418,11 @@ private:
 			}
 
 			ref inout(key_compare) _Getcomp() inout nothrow;
-
+			/*
+			{
+				return _Mypair._Get_first();
+			}
+			*/
 			void clear() nothrow;
 
 			size_type size() const nothrow
@@ -427,7 +438,7 @@ private:
 			{
 				return _Get_scary._Mysize == 0;
 			}
-
+		/*
 			bool contains(const ref key_type _Keyval) const
 			{
 				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
@@ -435,9 +446,33 @@ private:
 
 		protected:
 
-			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const;
+			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const
+			{
+				const auto _Scary = _Get_scary();
+				_Tree_find_result!(_Nodeptr) _Result = {{_Scary._Myhead._Parent, _Tree_child._Right}, _Scary._Myhead};
+				_Nodeptr _Trynode = _Result._Location._Parent;
+				while(!_Trynode._Isnil)
+				{
+					_Result._Location._Parent = _Trynode;
+					if(_DEBUG_LT_PRED(_Getcomp(),_Keyval,_Traits._Kfn(_Trynode._Myval), _Keyval))
+					{
+						_Result._Location._Child = _Tree_child._Right;
+						_Trynode = _Trynode._Right;
+					}
+					else {
+						_Result._Location._Child = _Tree_child._Left;
+						_Result._Bound = _Trynode;
+						_Trynode = _Trynode._Left;
+					}
+				}
+				return _Result;
+			}
 		
-			bool _Lower_bound_duplicate(_Keyty)(const _Nodeptr _Bound, ref const _Keyty _Keyval) const;
+			bool _Lower_bound_duplicate(_Keyty)(const _Nodeptr _Bound, ref const _Keyty _Keyval) const
+			{
+				return !_Bound._Isnil && !_DEBUG_LT_PRED(_Getcomp(), _Keyval, _Traits._Kfn(_Bound._Myval));
+			}
+			*/
 
 		public:
 			import stdcpp.xutility : _Compressed_pair;
@@ -452,7 +487,12 @@ private:
 			alias value_type = _Kty;
 			alias key_compare = _Pr;
 			alias allocator_type = _Alloc;
-
+		/*
+			static const ref _Kty _Kfn(const ref value_type _Val)
+			{
+				return _Val;
+			}
+		*/
 		}
 
 	}
