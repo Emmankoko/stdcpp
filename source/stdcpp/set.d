@@ -8,7 +8,10 @@ extern(C++, (StdNamespace)):
 //will definately be moved(maybe to stdcpp.utilities)
 extern(C++) struct less(T)
 {
-
+	static bool opCall(const ref T left, const ref T right)
+	{
+		return left < right;
+	}
 }
 
 extern(C++) struct _Identity(T)
@@ -215,12 +218,12 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		}
 	
 		void swap(ref set other) nothrow;
-		/*
-		bool contains(ref const key_type key) const
+
+		bool contains(const key_type key)
 		{
 			return this._Mybase.contains(key);
 		}
-		*/
+
 		key_compare key_comp() const
 		{
 			return this._Mybase.key_comp();
@@ -423,12 +426,6 @@ private:
 				return &(_Mypair._Myval2._Myval2);
 			}
 
-			ref inout(key_compare) _Getcomp() inout nothrow;
-			/*
-			{
-				return _Mypair._Get_first();
-			}
-			*/
 			void clear() nothrow;
 
 			size_type size() const nothrow
@@ -451,16 +448,23 @@ private:
 				return _Get_scary._Mysize == 0;
 			}
 		
-			bool contains(const ref key_type _Keyval) const
+			bool contains(const ref key_type _Keyval)
 			{
 				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
 			}
 
 		protected:
 
-			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval) const
+			ref inout(key_compare) _Getcomp() inout nothrow;
+			/*
 			{
-				const auto _Scary = _Get_scary();
+				return _Mypair._Get_first();
+			}
+			*/
+
+			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval)
+			{
+				auto _Scary = _Get_scary();
 				_Tree_find_result!(_Nodeptr) _Result = {{_Scary._Myhead._Parent, _Tree_child._Right}, _Scary._Myhead};
 				_Nodeptr _Trynode = _Result._Location._Parent;
 				while(!_Trynode._Isnil)
