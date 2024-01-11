@@ -319,17 +319,22 @@ private:
 	}
 	else version (CppRuntime_Microsoft)
 	{
-		extern(C++) T* addressof(T)( ref T arg ) nothrow;
+		//_Ty _Returns_exactly(_Ty)() nothrow;
+		extern(C++) const(bool) _DEBUG_LT_PRED(_Pr, _Ty1, _Ty2)(_Pr _Pred, _Ty1 _Left, _Ty2 _Right)
+		{
+			const auto __result = cast(bool)(_Pred(_Left, _Right));
+			return __result;
+		} 
 		extern(C++) struct _Tree_node(_value_type, _voidptr)
 		{
-			alias _Nodeptr = allocator_traits!(allocator!(_value_type)).rebind_alloc!(_Tree_node);
+			alias _Nodeptr = _Tree_node!(value_type, void*)*;
 			alias value_type = _value_type;
 			_Nodeptr _Left;
 			_Nodeptr _Parent;
 			_Nodeptr _Right;
 			char _Color;
 			char _Isnil;
-			//_value_type _Myval = value_type;
+			_value_type _Myval;
 
 			enum _Redbl {
 				_Red,
@@ -389,6 +394,7 @@ private:
 		{
 			alias key_compare = _Traits.key_compare;
 			alias value_type = _Traits.value_type;
+			alias value_compare = _Traits.value_compare;
 			alias key_type = _Traits.value_type;
 			alias allocator_type = _Traits.allocator_type;
 			alias _Node = _Tree_node!(value_type, void*);
@@ -432,13 +438,19 @@ private:
 
 			key_compare key_comp() const;
 
+		/*	value_compare value_comp() const
+			{
+				return value_compare(key_comp());
+			}
+			*/
+
 			size_type max_size() const nothrow;
 		
 			bool empty() const nothrow
 			{
 				return _Get_scary._Mysize == 0;
 			}
-		/*
+		
 			bool contains(const ref key_type _Keyval) const
 			{
 				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
@@ -454,7 +466,7 @@ private:
 				while(!_Trynode._Isnil)
 				{
 					_Result._Location._Parent = _Trynode;
-					if(_DEBUG_LT_PRED(_Getcomp(),_Keyval,_Traits._Kfn(_Trynode._Myval), _Keyval))
+					if(_DEBUG_LT_PRED(_Getcomp(),_Traits._Kfn(_Trynode._Myval), _Keyval))
 					{
 						_Result._Location._Child = _Tree_child._Right;
 						_Trynode = _Trynode._Right;
@@ -472,7 +484,7 @@ private:
 			{
 				return !_Bound._Isnil && !_DEBUG_LT_PRED(_Getcomp(), _Keyval, _Traits._Kfn(_Bound._Myval));
 			}
-			*/
+			
 
 		public:
 			import stdcpp.xutility : _Compressed_pair;
@@ -486,13 +498,14 @@ private:
 			alias key_type = _Kty;
 			alias value_type = _Kty;
 			alias key_compare = _Pr;
+			alias value_compare = key_compare;
 			alias allocator_type = _Alloc;
-		/*
-			static const ref _Kty _Kfn(const ref value_type _Val)
+		
+			static ref const(_Kty) _Kfn(const ref value_type _Val)
 			{
 				return _Val;
 			}
-		*/
+		
 		}
 
 	}
