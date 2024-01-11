@@ -22,5 +22,6 @@ unittest
 	assert(p.empty == 1);
 	assert(p.key_comp() == a);
 	assert(p.contains(5) == 0);
+	assert(p.contains(8) == 0);
 
 }
