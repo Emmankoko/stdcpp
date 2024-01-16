@@ -428,6 +428,8 @@ private:
 			alias size_type = allocator_traits!(allocator_type).rebind_alloc!(value_type).size_type;
 			alias _Scary_val = _Tree_val!(conditional_t!(false, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
 			alias pointer = value_type*;
+			alias _Unchecked_const_iterator = _Tree_unchecked_const_iterator!(_Scary_val);
+			__gshared const(bool) _Multi = _Traits._Multi;
 
 			enum _Redbl {
 				_Red,
@@ -569,8 +571,22 @@ private:
 				return _Lonode, _Hinode; //, _Hinode};
 			}
 
+		/*	pair!(_Nodeptr, bool) _Emplace(_Valty...)(_Valty val)
+			{
+				alias in_place_key_extractor = _Traits._In_place_key_extractor!(_Remove_cvref_t!(_Valty));
+				auto _Scary = _Get_scary;
+				_Tree_find_result!(_Nodeptr) _Loc;
+				_Nodeptr _Inserted;
+				if const (!_Multi && _In_place_key_extractor._Extractable)
+				{
+					auto ref _Keyval = _In_place_key_extractor._Extract(val..);
+					_Loc = _Find_lower_bound(key)
+				}
+			}
+		*/
+
 		private:
-			_Nodeptr _Find(other)(const ref other _keyval) 
+			_Nodeptr _Find(other)(const ref other _keyval)
 			{
 				_Tree_find_result!(_Nodeptr) loc = _Find_lower_bound(_keyval);
 				if(_Lower_bound_duplicate(loc._Bound, _keyval))
