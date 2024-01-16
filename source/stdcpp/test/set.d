@@ -25,5 +25,6 @@ unittest
 	assert(p.contains(8) == 0);
 	assert(p.count(6) == 0); // as said, count is always a 1 or 0 as set priotitizes uniqueness. 
 	assert(p.count(9) == 0);
+	assert(p.count(8) == 0);
 
 }
