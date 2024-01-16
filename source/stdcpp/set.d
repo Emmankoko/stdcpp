@@ -229,6 +229,11 @@ extern(C++, class) struct set(Key, compare, Alloc)
 			return this._Mybase.key_comp();
 		}
 
+		size_type count(const key_type key_val)
+		{
+			return _Mybase.count(key_val);
+		}
+
 		_Tree!(_Tset_traits!(key_type,less!key_type, allocator_type, false)) _Mybase;
 
 	}
@@ -366,6 +371,8 @@ private:
 			alias size_type = _Val_types.size_type;
 			_Nodeptr _Myhead;
 			size_type _Mysize;
+			alias value_type = _Val_types.value_type;
+			alias difference_type = _Val_types.difference_type;
 			
 		}
 		extern(C++) struct _Tree_simple_types(_Ty)
@@ -391,6 +398,20 @@ private:
 				alias type = _Ty1;
 			else
 				alias type = _Ty2;
+		}
+
+		extern(C++) struct _Iterator_base0
+		{
+
+		}
+
+		extern(C++, class) struct _Tree_unchecked_const_iterator(_Mytree, _Base = _Iterator_base0)
+		{
+			alias _Nodeptr = _Mytree._Nodeptr;
+			alias value_type = _Mytree.value_type;
+			alias difference_type = _Mytree.difference_type;
+
+			this(_Nodeptr _Pnode, const _Mytree* _Plist) nothrow;
 		}
 
 		extern(C++, class) struct _Tree(_Traits)
@@ -452,7 +473,24 @@ private:
 			{
 				return _Lower_bound_duplicate(_Find_lower_bound(_Keyval)._Bound, _Keyval);
 			}
-
+			/*
+			auto find(ref const key_type _keyval)
+			{
+				return _Find(_keyval);
+			}
+			*/
+			
+			size_type count(const ref key_type value)
+			{
+				static if (_Multi)
+				{
+					auto _Ans = _Eqrange(value);
+					return cast(size_type)(_Unchecked_const_iterator(_Ans.first, null), _Unchecked_const_iterator(_Ans.second, null));
+				}
+				else {
+					return _Lower_bound_duplicate(_Find_lower_bound(value)._Bound, value);
+				}
+			}
 		protected:
 
 			ref inout(key_compare) _Getcomp() inout nothrow;
@@ -488,6 +526,59 @@ private:
 			{
 				return !_Bound._Isnil && !_DEBUG_LT_PRED(_Getcomp(), _Keyval, _Traits._Kfn(_Bound._Myval));
 			}
+
+			pair!(_Nodeptr, _Nodeptr) _Eqrange(other)(const ref other _keyval)
+			{
+				auto _Scary = _Get_scary();
+				auto ref _Comp = _Getcomp();
+				_Nodeptr _Pnode = _Scary._Myhead._Parent;
+				_Nodeptr _Lonode = _Scary._Myhead;
+				_Nodeptr _Hinode = _Scary._Myhead;
+
+				while(!_Pnode._Isnil)
+				{
+					auto ref _Nodekey = _Traits._Kfn(_Pnode._Myval);
+					if (_DEBUG_LT_PRED(_Comp, _Nodekey, _keyval)){
+						_Pnode = _Pnode._Right;
+					}
+					else {
+						if(_Hinode._Isnil && _DEBUG_LT_PRED(_Comp, _keyval, _Nodekey))
+						{
+							_Hinode = _Pnode;
+						}
+
+						_Lonode = _Pnode;
+						_Pnode = _Pnode._Left;
+
+					}
+				}
+
+				_Pnode = _Hinode._Isnil ? _Scary._Myhead._Parent : _Hinode._Left;
+				while(!_Pnode._Isnil)
+				{
+					if (_DEBUG_LT_PRED(_Getcomp(), _keyval, _Traits._Kfn(_Pnode._Myval)))
+					{
+						_Hinode = _Pnode;
+						_Pnode = _Pnode._Left;
+					}
+					else {
+						_Pnode = _Pnode._Right;
+					}
+				}
+
+				return _Lonode, _Hinode; //, _Hinode};
+			}
+
+		private:
+			_Nodeptr _Find(other)(const ref other _keyval) 
+			{
+				_Tree_find_result!(_Nodeptr) loc = _Find_lower_bound(_keyval);
+				if(_Lower_bound_duplicate(loc._Bound, _keyval))
+				{
+					return loc._Bound;
+				}
+				return _Get_scary._Myhead;
+			}
 			
 
 		public:
@@ -504,6 +595,9 @@ private:
 			alias key_compare = _Pr;
 			alias value_compare = key_compare;
 			alias allocator_type = _Alloc;
+			__gshared const(bool) _Multi = _Mf1;
+
+			
 		
 			static ref const(_Kty) _Kfn(const ref value_type _Val)
 			{
