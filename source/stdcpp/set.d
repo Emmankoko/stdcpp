@@ -195,12 +195,12 @@ extern(C++, class) struct set(Key, compare, Alloc)
 		{
 			this._Mybase.clear();
 		}
-		/*
+		
 		pair!(pointer, bool) insert( const Key val)
 		{
 			return this._Mybase.insert(val);
 		}
-		*/
+		
 
 		size_type size() const nothrow
 		{
@@ -373,13 +373,101 @@ private:
 			size_type _Mysize;
 			alias value_type = _Val_types.value_type;
 			alias difference_type = _Val_types.difference_type;
-			
+
+			enum _Redbl { _Red, _Black}
+
+			void _Rrotate(_Nodeptr _Wherenode) nothrow;
+
+			void _Lrotate(_Nodeptr _Wherenode) nothrow;
+
+			_Nodeptr _Insert_node( _Tree_id!(_Nodeptr) _Loc, _Nodeptr _Newnode) nothrow
+			{
+				++_Mysize;
+				auto _Head = _Myhead;
+				_Newnode._Parent = _Loc._Parent;
+				if (_Loc._Parent == _Head)
+				{
+					_Head._Left = _Newnode;
+					_Head._Parent = _Newnode;
+					_Head._Right = _Newnode;
+					_Newnode._Color = _Redbl._Black;
+					return _Newnode;
+				}
+				//_STL_INTERNAL_CHECK(_Loc._Child != _Tree_child._Unused);
+				if (_Loc._Child == _Tree_child._Right)
+				{
+					//STL_INTERNAL_CHECK(_Loc._Parent._Right._Isnil);
+					_Loc._Parent._Right = _Newnode;
+					if (_Loc._Parent == _Head._Right)
+					{
+						_Head._Right = _Newnode;
+					} else {
+						//_STL_INTERNAL_CHECK(_Loc._Parent._Left._Isnil);
+						_Loc._Parent._Left = _Newnode;
+						if (_Loc._Parent == _Head._Left)
+						{
+							_Head._Left = _Newnode;
+						}
+					}
+				}
+				for (_Nodeptr _Pnode = _Newnode; _Pnode._Parent._Color == _Redbl._Red;){
+					if (_Pnode._Parent == _Pnode._Parent._Parent._Left){
+					auto _Parent_sibling = _Pnode._Parent._Parent._Right;
+					if (_Parent_sibling._Color == _Redbl._Red)
+					{
+						_Pnode._Parent._Color = _Redbl._Black;
+						_Parent_sibling._Color = _Redbl._Black;
+						_Pnode._Parent._Parent._Color = _Redbl._Red;
+						_Pnode = _Pnode._Parent._Parent;
+					} else {
+						if (_Pnode == _Pnode._Parent._Right)
+						{
+							_Pnode = _Pnode._Parent;
+							_Lrotate(_Pnode);
+						}
+
+						_Pnode._Parent._Color = _Redbl._Black;
+						_Pnode._Parent._Parent._Color = _Redbl._Red;
+						_Rrotate(_Pnode._Parent._Parent);
+					}
+				} else {
+
+					auto _Parent_sibling = _Pnode._Parent._Parent._Left;
+					if ( _Parent_sibling._Color == _Redbl._Red)
+					{
+						_Pnode._Parent._Color = _Redbl._Black;
+						_Parent_sibling._Color = _Redbl._Black;
+						_Pnode._Parent._Parent._Color = _Redbl._Red;
+						_Pnode = _Pnode._Parent._Parent;
+					} else {
+						if (_Pnode == _Pnode._Parent._Left)
+						{
+							_Pnode = _Pnode._Parent;
+							_Rrotate(_Pnode);
+						}
+						_Pnode._Parent._Color = _Redbl._Black;
+						_Pnode._Parent._Parent._Color = _Redbl._Red;
+						_Lrotate(_Pnode._Parent._Parent);
+					}
+				}
+			}
+				_Head._Parent._Color = _Redbl._Black;
+				return _Newnode;
 		}
+		}
+
 		extern(C++) struct _Tree_simple_types(_Ty)
 		{
 			alias _Node = _Tree_node!(_Ty, void*);
 			alias _Nodeptr =  _Node*;
+			alias size_type = size_t;
+			alias pointer = _Ty*;
+			alias value_type = _Ty;
+			alias difference_type = ptrdiff_t;
+			alias const_pointer = const(pointer);
 		}
+
+		extern(C++) void _Throw_tree_length_error();
 
 		extern(C++) struct _Tree_iter_types(_Value_type, _size_type, _Diff_type, _Pointer, _Const_pointer, _Nodeptr_type)
 		{
@@ -414,6 +502,73 @@ private:
 			this(_Nodeptr _Pnode, const _Mytree* _Plist) nothrow;
 		}
 
+		//might be moved to utility
+		_Ty exchange(_Ty, _other = _Ty)(ref _Ty val, _other new_val )
+		{
+			_Ty old_val = val;
+			val = new_val;
+			return old_val;
+		}
+
+		extern(C++) struct _Alloc_construct_ptr(_Alloc)
+		{
+			alias pointer = allocator_traits!(_Alloc).pointer;
+			//ref _Alloc _Al;
+			pointer _Ptr;
+
+
+			pointer _Release() nothrow
+			{
+				return exchange(_Ptr, null);
+			}
+		}
+		extern(C++) struct _Tree_temp_node(_Alnode)
+		{
+			alias _Alnode_traits = allocator_traits!(_Alnode);
+			alias _Nodeptr = _Alnode_traits.pointer;
+
+			enum _Redbl {
+				_Red,
+				_Black
+			}
+
+			this(_Valty...)(ref _Alnode _Al, _Nodeptr _Myhead, _Valty _vals);
+
+			~this();
+
+			_Alloc_construct_ptr!(_Alnode) new_instance;
+
+
+
+
+		}
+
+		
+		extern(C++) struct _In_place_key_extract_set(_Key, _Args...)
+		{
+			__gshared const(bool) _Extractable = false;
+		}
+
+		alias _In_place_key_extract_set(_Key) = _In_place_key_extract_set!(_Key, _Key);
+		extern(C++) struct _In_place_key_extract_set(_Key)
+		{
+			__gshared const(bool) _Extractable = true;
+			__gshared const(_Key) _Extract(ref const _Key _Val) nothrow
+			{
+				return _Val;
+			}
+		}
+
+		alias enable_if_t(bool _Test, _Ty = void) = enable_if!(_Test, _Ty).type;
+		extern(C++) struct enable_if(bool _Test, _Ty = void)
+		{
+			static if (_Test == true)
+			{
+				alias type = _Ty;
+			}
+		}
+
+
 		extern(C++, class) struct _Tree(_Traits)
 		{
 			alias key_compare = _Traits.key_compare;
@@ -426,7 +581,7 @@ private:
 			alias _Alnode_traits = allocator_traits!(_Alnode);
 			alias _Nodeptr = _Alnode_traits.pointer;
 			alias size_type = allocator_traits!(allocator_type).rebind_alloc!(value_type).size_type;
-			alias _Scary_val = _Tree_val!(conditional_t!(false, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
+			alias _Scary_val = _Tree_val!(conditional_t!(true, _Tree_simple_types!(value_type), _Tree_iter_types!(value_type, size_t, ptrdiff_t, value_type*, const(value_type)*, _Nodeptr)));
 			alias pointer = value_type*;
 			alias _Unchecked_const_iterator = _Tree_unchecked_const_iterator!(_Scary_val);
 			__gshared const(bool) _Multi = _Traits._Multi;
@@ -442,12 +597,16 @@ private:
 
 			ref _Tree opAssign(const ref _Tree _Right);
 
-			pair!(pointer, bool) insert(const ref value_type _Val);
-
-			inout(_Scary_val)* _Get_scary() inout nothrow
+			pair!(pointer, bool) insert(bool _Multi2 = _Multi)(const ref value_type _Val)
 			{
-				return &(_Mypair._Myval2._Myval2);
+				auto _Result = _Emplace(_Val);
+				pair!(pointer, bool) pair_instance = {cast(pointer)_Result.first, _Result.second};
+				return pair_instance;
+
 			}
+			
+
+			
 
 			void clear() nothrow;
 
@@ -502,6 +661,13 @@ private:
 			}
 			*/
 
+			ref inout(_Alnode) _Getal() inout nothrow;
+
+			inout(_Scary_val)* _Get_scary() inout nothrow
+			{
+				return &(_Mypair._Myval2._Myval2);
+			}
+
 			_Tree_find_result!(_Nodeptr) _Find_lower_bound(_Keyty)(const ref _Keyty _Keyval)
 			{
 				auto _Scary = _Get_scary();
@@ -519,6 +685,35 @@ private:
 						_Result._Location._Child = _Tree_child._Left;
 						_Result._Bound = _Trynode;
 						_Trynode = _Trynode._Left;
+					}
+				}
+				return _Result;
+			}
+
+			void _Check_grow_by_1()
+			{
+				if (max_size == _Get_scary._Mysize)
+					{
+						_Throw_tree_length_error();
+					}
+			}
+
+			_Tree_find_result!(_Nodeptr) _Find_uppper_bound(_Keyty)(const ref _Keyty _Keyval)
+			{
+				auto _Scary = _Get_scary();
+				_Tree_find_result!(_Nodeptr) _Result = {{_Scary._Myhead._Parent, _Tree_child._Right}, _Scary._Myhead};
+				_Nodeptr _Trynode = _Result._Location._Parent;
+				while(!_Trynode._Isnil)
+				{
+					_Result._Location._Parent = _Trynode;
+					if (_DEBUG_LT_PRED(_Getcomp, _Keyval, _Traits._Kfn(_Trynode._Myval)))
+					{
+						_Result._Location._Child = _Tree_child._Left;
+						_Result._Bound = _Trynode;
+						_Trynode = _Trynode._Left;
+					} else {
+						_Result._Location._Child = _Tree_child._Right;
+						_Trynode = _Trynode._Right;
 					}
 				}
 				return _Result;
@@ -568,22 +763,44 @@ private:
 					}
 				}
 
-				return _Lonode, _Hinode; //, _Hinode};
+				return _Lonode, _Hinode;
 			}
 
-		/*	pair!(_Nodeptr, bool) _Emplace(_Valty...)(_Valty val)
+			pair!(_Nodeptr, bool) _Emplace(_Valty...)(_Valty val)
 			{
-				alias in_place_key_extractor = _Traits._In_place_key_extractor!(_Remove_cvref_t!(_Valty));
-				auto _Scary = _Get_scary;
+				alias In_place_key_extractor = _Traits._In_place_key_extractor!(_Valty);
+				auto _Scary = _Get_scary();
 				_Tree_find_result!(_Nodeptr) _Loc;
 				_Nodeptr _Inserted;
-				if const (!_Multi && _In_place_key_extractor._Extractable)
+				static if (!_Multi && In_place_key_extractor._Extractable)
 				{
-					auto ref _Keyval = _In_place_key_extractor._Extract(val..);
-					_Loc = _Find_lower_bound(key)
+					auto ref _Keyval = _In_place_key_extractor._Extract(val);
+					_Loc = _Find_lower_bound(_Keyval);
+					if (_Lower_bound_duplicate(_Loc._Bound, _Keyval))
+					{
+						return _Loc._Bound, false;
+					}
+					_Check_grow_by_1();
+					_Inserted = _Tree_temp_node!(_Alnode)(_Getal(), _Scary._Myhead, val).new_instance._Release();
+
+				} else {
+					auto _Newnode = _Tree_temp_node!_Alnode(_Getal(), _Scary._Myhead, val);
+					auto _Keyval = _Traits._Kfn(_Newnode.new_instance._Ptr._Myval);
+					static if (_Multi)
+					{
+						_Loc = _Find_uppper_bound(__Keyval);
+						if (_Lower_bound_duplicate(_Loc._Bound, _Keyval))
+						{
+							return _Loc._Bound, false;
+						}
+					}
+					_Check_grow_by_1();
+					_Inserted = _Newnode.new_instance._Release();
 				}
+				pair!(_Nodeptr, bool) pair_instance = {_Scary._Insert_node(_Loc._Location, _Inserted), true};
+				return pair_instance;
 			}
-		*/
+		
 
 		private:
 			_Nodeptr _Find(other)(const ref other _keyval)
@@ -619,6 +836,9 @@ private:
 			{
 				return _Val;
 			}
+
+			alias _In_place_key_extractor(_Args...) = _In_place_key_extract_set!(_Kty, _Args);
+
 		
 		}
 
