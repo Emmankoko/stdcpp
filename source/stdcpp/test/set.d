@@ -16,7 +16,7 @@ unittest
 	set!int q = a; // copy ctor
 	q.swap(p);
 	set!int j = a;
-	q = j; // opAssign
+	q = j; // opAssign(since it's subsequent initialization)
 	p.clear;
 	assert(p.size == 0);
 	assert(p.empty == 1);
@@ -26,5 +26,7 @@ unittest
 	assert(p.count(6) == 0); // as said, count is always a 1 or 0 as set priotitizes uniqueness. 
 	assert(p.count(9) == 0);
 	assert(p.count(8) == 0);
+	//p.insert(4);
+	//assert(p.size == 1);
 
 }

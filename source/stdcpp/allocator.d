@@ -266,6 +266,13 @@ struct allocator_traits(Alloc)
         else
             return a;
     }
+
+    // to be moved to allocator in allocator_traits
+	extern(C++) static void construct(_Objty, _Types...)(ref Alloc, const _Objty * _Pty, auto ref _Types _Args)
+	{
+		import core.lifetime : emplace, forward;
+		emplace(_Pty, cast(_Objty)forward!_Args);
+	}
 }
 
 private:

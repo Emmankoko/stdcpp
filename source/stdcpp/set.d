@@ -196,7 +196,7 @@ extern(C++, class) struct set(Key, compare, Alloc)
 			this._Mybase.clear();
 		}
 		
-		pair!(pointer, bool) insert( const Key val)
+		auto insert( const Key val)
 		{
 			return this._Mybase.insert(val);
 		}
@@ -327,6 +327,7 @@ private:
 	}
 	else version (CppRuntime_Microsoft)
 	{
+		import core.lifetime : emplace, forward;
 		//_Ty _Returns_exactly(_Ty)() nothrow;
 		extern(C++) const(bool) _DEBUG_LT_PRED(_Pr, _Ty1, _Ty2)(_Pr _Pred, _Ty1 _Left, _Ty2 _Right)
 		{
@@ -513,75 +514,21 @@ private:
 		extern(C++) struct _Alloc_construct_ptr(_Alloc)
 		{
 			alias pointer = allocator_traits!(_Alloc).pointer;
-			ref _Alloc _Al;
+			_Alloc _Al;
 			pointer _Ptr;
-
 
 			pointer _Release() nothrow
 			{
 				return exchange(_Ptr, null);
 			}
-		}
+		}	
 
 		//to be moved to xutility
-		_Ty* construct_at(_Ty, _Types...)(const _Ty* _Location, auto ref _Types Args) nothrow
-		{
-			import core.lifetime: emplace, forward;
-			return emplace(cast(void*)_Location, forward!Args);
-		}
-		
-
-		//might be moved to xutility
 		extern(C++) void _Construct_in_place(Ty, Args...)( ref Ty obj, auto ref Args args)
 		{
 			import core.lifetime : emplace, forward;
-
-			emplace(cast(void*)(&obj), forward!args);
-
+			emplace(&obj, cast(Ty)forward!args);
 		}
-
-		//to be moved to allocator
-		extern(C++) void _Uses_alloc_construct_non_pair(_Ty, _Outer_alloc, _Inner_alloc, _Types...)(const _Ty* _Ptr, ref _Outer_alloc _outer, ref _Inner_alloc _Inner, auto ref _Types args )
-		{
-			import core.lifetime : forward;
-			static if (uses_allocator_v!(remove_cv_t!(_Ty), _Inner_alloc))
-			{
-				static if(is_constructible_v!(_Ty, allocator_arg_t, _Inner_alloc, _Types))
-				{
-				//	allocator_traits!(_Outer_alloc).construct(_outer, _Ptr, allocator_arg_t, _Inner, forward!args);
-					construct(_outer, _Ptr, allocator_arg_t, _Inner, forward!args);
-				} else {
-					static assert (is_constructible_v!(_Ty, _Types, _Inner_alloc), "N4950 [allocator.uses.trait]/1 requires "
-                "is_constructible_v<T, Args..., Alloc&> when uses_allocator_v<remove_cv_t<T>, Alloc> is true and "
-                "is_constructible_v<T, allocator_arg_t, Alloc&, Args...> is false" );
-				//	allocator_traits!(_Outer_alloc).construct(_outer, _Ptr, forward!(args), _Inner);
-					construct(_outer, _Ptr, forward!(args), _Inner);
-				}
-
-			} else {
-				static assert(is_constructible_v!(_Ty, _Types), "N4950 [allocator.uses.trait]/1 requires 
-            is_constructible_v<T, Args...> when uses_allocator_v<remove_cv_t<T>, Alloc> is false");
-			//	allocator_traits!(_Outer_alloc).construct(_Outer, _Ptr, forward!args);
-				construct(_Outer, _Ptr, forward!args);
-			}
-		}
-
-		//extern(C++) void _Uses_alloc_construct_pair()
-
-		// to be moved to allocator in allocator_traits
-		extern(C++) void construct(_Uty, _Types...)(const _Uty* _Ptr, auto ref _Types _Args)
-		{
-			import core.lifetime : forward;
-			allocator!char Al;
-			static if (_Is_cv_pair!_Uty)
-			{
-				_Uses_alloc_construct_pair(_Ptr, Al, this, forward!_Args);
-			} else {
-				_Uses_alloc_construct_non_pair(_Ptr, Al, this, forward!_Args);
-			}
-
-		}
-
 
 		extern(C++) struct _Tree_temp_node(_Alnode)
 		{
@@ -595,8 +542,7 @@ private:
 
 			this(_Valty...)(ref _Alnode _Al, _Nodeptr _Myhead, _Valty _vals)
 			{
-				//_Alnode_traits.construct(this.new_instance._Al, &(this.new_instance._Ptr._Myval, _Valty vals));
-				construct(this.new_instance._Al, &(this.new_instance._Ptr._Myval, vals));
+				_Alnode_traits.construct(this.new_instance._Al, &(this.new_instance._Ptr._Myval), forward!_vals);
 				_Construct_in_place(this.new_instance._Ptr._Left, _Myhead);
 				_Construct_in_place(this.new_instance._Ptr._Parent, _Myhead);
 				_Construct_in_place(this.new_instance._Ptr._Right, _Myhead);
@@ -609,12 +555,8 @@ private:
 
 			_Alloc_construct_ptr!(_Alnode) new_instance;
 
-
-
-
 		}
 
-		
 		extern(C++) struct _In_place_key_extract_set(_Key, _Args...)
 		{
 			__gshared const(bool) _Extractable = false;
@@ -639,7 +581,12 @@ private:
 			}
 		}
 
-
+		extern(C++, class) struct _Tree_const_iterator(_Mytree)
+		{
+				alias value_type = _Mytree.value_type;
+				void* p;
+				
+		}
 		extern(C++, class) struct _Tree(_Traits)
 		{
 			alias key_compare = _Traits.key_compare;
@@ -668,16 +615,12 @@ private:
 
 			ref _Tree opAssign(const ref _Tree _Right);
 
-			pair!(pointer, bool) insert(bool _Multi2 = _Multi)(const ref value_type _Val)
+			pair!(_Nodeptr, bool) insert(bool _Multi2 = _Multi)(const ref value_type _Val)
 			{
 				auto _Result = _Emplace(_Val);
-				pair!(pointer, bool) pair_instance = {cast(pointer)_Result.first, _Result.second};
+				pair!(_Nodeptr, bool) pair_instance = {_Result.first, _Result.second};
 				return pair_instance;
-
-			}
-			
-
-			
+			}	
 
 			void clear() nothrow;
 
@@ -839,7 +782,7 @@ private:
 
 
 
-			pair!(_Nodeptr, bool) _Emplace(_Valty...)(_Valty val)
+			pair!(_Nodeptr, bool) _Emplace(_Valty...)(auto ref _Valty val)
 			{
 				alias In_place_key_extractor = _Traits._In_place_key_extractor!(_Valty);
 				auto _Scary = _Get_scary();
@@ -854,10 +797,10 @@ private:
 						return _Loc._Bound, false;
 					}
 					_Check_grow_by_1();
-					_Inserted = _Tree_temp_node!(_Alnode)(_Getal(), _Scary._Myhead, val).new_instance._Release();
+					_Inserted = _Tree_temp_node!(_Alnode)(_Getal(), _Scary._Myhead, forward!val).new_instance._Release();
 
 				} else {
-					auto _Newnode = _Tree_temp_node!_Alnode(_Getal(), _Scary._Myhead, val);
+					auto _Newnode = _Tree_temp_node!_Alnode(_Getal(), _Scary._Myhead, forward!val);
 					auto _Keyval = _Traits._Kfn(_Newnode.new_instance._Ptr._Myval);
 					static if (_Multi)
 					{
@@ -873,7 +816,7 @@ private:
 				pair!(_Nodeptr, bool) pair_instance = {_Scary._Insert_node(_Loc._Location, _Inserted), true};
 				return pair_instance;
 			}
-		
+
 
 		private:
 			_Nodeptr _Find(other)(const ref other _keyval)
