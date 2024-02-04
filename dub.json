@@ -13,11 +13,12 @@
         },
         {
             "name": "unittest",
-            "lflags": [ "--wi" ],
+            "dflags": ["-gc"],
+            "lflags": [ ""],
             "preGenerateCommands": [
 		"cl -c extras/set.cpp"
             ],
             "sourceFiles": [ "*.obj" ]
-        },
+        }
     ]
 }
