@@ -23,6 +23,8 @@ module stdcpp.vector;
 
 import stdcpp.allocator;
 
+import stdcpp.xutility : StdNamespace;
+
 version(CppRuntime_Gcc)
     version = Non_microsoft;
 else version(CppRuntime_Clang)
@@ -33,7 +35,7 @@ enum DefaultConstruct { value }
 /// Constructor argument for default construction
 enum Default = DefaultConstruct();
 
-extern(C++, "std"):
+extern(C++, (StdNamespace)):
 
 alias vector(T) = vector!(T, allocator!T);
 extern(C++, class) struct vector(T, Alloc)
