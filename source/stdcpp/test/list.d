@@ -46,7 +46,7 @@ unittest
 	auto p = list!int(5,5);
 	p.push_back(5);
 	p.push_front(7);
-/*	p.assign(5,5);
+	p.assign(5,5);
 	p.pop_front();
 	p.resize(3);
 	p.clear();
@@ -74,6 +74,6 @@ unittest
 	assert(new_list.back == 0);
 	new_list.clear();
 	assert(new_list.empty == 1);
-    */
+    
 }
 }
