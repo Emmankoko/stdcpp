@@ -308,11 +308,6 @@ extern(C++, class) struct list(Type, Allocator)
 	}
 	else version(CppRuntime_Clang)
 	{
-		this(def)
-		{
-			allocator!Type alloc_instance = allocator!(Type).init;
-			this(alloc_instance);
-		}
 
 		 //allocator ctor
 		this(ref const allocator!Type);
