@@ -476,12 +476,6 @@ version (CppRuntime_Clang)
 
         bool empty() const nothrow  {return __sz() == 0; }
 
-        void __unlink_nodes(__list_node_base!(value_tp,void_pointer)* __f, __list_node_base!(value_tp, void_pointer)* __l) nothrow
-        {
-            __f.prev.next = __l.next;
-            __l.next.prev = __f.prev;
-        }
-
         void clear() nothrow;
 
         ~this()
