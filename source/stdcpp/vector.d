@@ -760,7 +760,7 @@ extern(D):
         inout(T)[] as_array() inout pure nothrow @trusted @nogc             { return null; }
         ref inout(T) at(size_type i) inout pure nothrow @trusted @nogc      { data()[0]; }
     }
-    else version (Non_microsoft)
+    else version (CppRuntime_Gcc)
     {
         pointer _M_start;
         pointer _M_finish;
@@ -839,6 +839,179 @@ extern(D):
         extern(C++) pointer begin() nothrow;
 
         extern(C++) pointer end() nothrow;
+    }
+    else version (CppRuntime_Clang)
+    {
+
+        private extern(C++) struct _ConstructTransaction
+        {
+            vector v;
+            pointer __pos_;
+            const(pointer) __new_end;
+            this(ref vector, size_t __n);
+
+            ~this();
+        }
+        pointer __begin_;
+        pointer __end_;
+        auto __end_cap_ = __compressed_pair!(pointer, allocator_type)(null, __default_init_tag());
+
+        inout(T)[] as_array() inout pure nothrow @trusted @nogc         {return this.__begin_[0 .. size()];}
+
+        extern(C++) vector opAssign( const ref vector!T);
+
+        //vector(n) constructor
+        extern(C++) this(size_t __n);
+
+        //copy constructor
+        extern(C++) this(ref const vector!(T, allocator!T));
+
+        extern (C++) this(const ref allocator!T alloc) nothrow;
+
+        extern(D) this(size_t n, const T item)
+        {
+            this(n, item);
+        }
+        //vector(n, value) constructor
+        extern(C++) this(size_t __n, const ref T value);
+
+        extern(C++) size_type max_size() const nothrow;
+
+        extern(C++) size_t capacity() const @safe nothrow pure @nogc
+        {
+            return cast(size_type)(__end_cap - this.__begin_);
+        }
+
+        ref inout(T) at(size_t __n) inout pure nothrow @nogc            {return this.__begin_[0 .. size()][__n];}
+
+        size_t size() const pure nothrow @safe @nogc
+        {
+            return size_type(this.__end_ - this.__begin_);
+        }
+
+        bool empty() const nothrow
+        {
+            return this.__begin_ == this.__end_;
+        }
+
+        extern(C++) pointer begin() nothrow;
+
+        extern(C++) pointer end() nothrow;
+
+        extern(D) void push_back(const T __x)
+        {
+            this.push_back(__x);
+        }
+        
+
+        void pop_back();
+     /*   {
+            assert(!empty(), "vector.pop_back called on empty vector");
+            this.__destruct_at_end(this.__end_ - 1);
+        }
+        */
+
+        extern(C++) void reserve(size_t __n);
+
+        extern(C++) void resize(size_t __n);
+
+        extern(C++) void clear();
+
+        extern(C++) void assign(size_t __n, ref const T __x);
+
+        extern(D) void assign(size_t n, const T x)
+        {
+            return this.assign(n,x);
+        }
+
+        extern(C++) void swap(ref vector!(T) x);
+
+        inout(value_type)* data() inout nothrow
+        {
+            return &(this.__begin_);
+        }
+
+        void push_back(const ref T __x)
+        {
+            pointer __end = this.__end_;
+            if (__end < this.__end_cap())
+            {
+                __construct_one_at_end(__x);
+                ++__end;
+            }
+            else {
+                __end = __push_back_slow_path(__x);
+            }
+            this.__end_ = __end;
+        }
+
+        pointer __push_back_slow_path(_Up)(auto ref _Up __x)
+        {
+            allocator_type __a = this.__alloc();
+            auto __v = __split_buffer!(value_type, allocator_type)(__recommend(size() + 1), size(), __a);
+            allocator_traits!(Alloc).construct(__a, &(__v.__end_), forward!(__x));
+            __v.__end_++;
+            __swap_out_circular_buffer(__v);
+            return this.__end_;
+        }
+
+        extern(C++) ref inout(allocator_type) __alloc() inout nothrow
+        {
+            return this.__end_cap_.second();
+        }
+
+        extern(C++) ref inout(pointer) __end_cap() inout nothrow
+        {
+            return this.__end_cap_.first();
+        }
+
+        extern(C++) void __construct_one_at_end(_Args...)(auto ref _Args args)
+        {
+            auto __tx = _ConstructTransaction(this, 1);
+            allocator_traits!(Alloc).construct(this.__alloc(), &(__tx.__pos_), forward!(args));
+            ++__tx.__pos_;
+        }
+
+        extern(C++) void __swap_out_circular_buffer(ref __split_buffer!(value_type, allocator_type) __v)
+        {
+            import std.algorithm.mutation : swap;
+            __annotate_delete();
+            auto __new_begin = __v.__begin_ - (__end_ - __begin_);
+            uninitialized_allocator_relocate(__alloc(), &(__begin_), &(__end_), &(__new_begin));
+            __v.__begin_ = __new_begin;
+            __end_ = __begin_;
+            swap(this.__begin_, __v.__begin_);
+            swap(this.__end_, __v.__end_);
+            swap(this.__end_cap(), __v.__end_cap());
+            __v.__first_ = __v.begin_;
+            __annotate_new(size());
+        }
+
+        extern(C++) size_type __recommend(size_type __new_size) const
+        {
+            const size_type __ms = max_size();
+            assert(__new_size <= __ms, "capacity cannot be greater or equal to max_size");
+            const size_type __cap = capacity();
+            if (__cap >= __ms / 2)
+            {
+                return __ms;
+            }
+            import std.algorithm.comparison;
+            return max(2 * __cap, __new_size);
+        }
+
+        extern(C++) void __annotate_new(size_type __current_size) const nothrow
+        {
+            cast(void)__current_size;
+            __annotate_contiguous_container(data() + capacity(), data() + __current_size);
+        }
+
+        extern(C++) void __annotate_delete() const nothrow
+        {
+            __annotate_contiguous_container(data() + size(), data() + capacity());
+
+        }
+
     }
 }
 
@@ -933,4 +1106,29 @@ version (CppRuntime_Microsoft)
             _Myvec.pointer _Ptr;
         }
     }
+}
+else version (CppRuntime_Clang)
+{
+    import stdcpp.xutility : __compressed_pair;
+    extern(C++) struct __split_buffer(_Tp, _Allocator = allocator!(_Tp))
+    {
+        alias allocator_type = _Allocator;
+        alias alloc_traits = allocator_traits!(allocator_type);
+        alias pointer = alloc_traits.pointer;
+
+        pointer __first_;
+        pointer __begin_;
+        pointer __end_;
+        __compressed_pair!(pointer, allocator_type) __end_cap;
+
+        this(size_t __cap, size_t __start, ref allocator!(_Tp));
+
+        ~this();
+    }
+    extern (C++) struct __default_init_tag
+    {
+
+    }
+
+
 }

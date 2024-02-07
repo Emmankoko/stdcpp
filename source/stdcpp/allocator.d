@@ -205,6 +205,12 @@ extern(D):
 
         ///
         enum size_t max_size = size_t.max / T.sizeof;
+
+        void construct(_Up, _Args...)(_Up* __p, auto ref _Args args)
+        {
+            import core.lifetime : emplace, forward;
+            emplace(__p, cast(_Up)forward!args); 
+        }
     }
     else
     {
@@ -265,6 +271,15 @@ struct allocator_traits(Alloc)
             return a.select_on_container_copy_construction();
         else
             return a;
+    }
+
+    version (CppRuntime_Clang)
+    {
+        import core.lifetime : forward;
+        static void construct(_Tp,_Args)(ref allocator_type __a, _Tp* __p, auto ref _Args args)
+        {
+            __a.construct(__p, forward!args);
+        } 
     }
 }
 

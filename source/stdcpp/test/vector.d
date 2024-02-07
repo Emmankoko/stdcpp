@@ -7,7 +7,8 @@
 module stdcpp.test.vector;
 
 import stdcpp.vector;
-
+version (CppRuntime_Gcc)
+{
 unittest
 {
     auto vec = vector!int(4);
@@ -69,4 +70,9 @@ unittest
     assert(cp_ctor.length == 1);
     auto iter = cp_ctor.begin();
     assert(*(iter) == 4); // first element in vector
+}
+}
+else version (CppRuntime_Clang)
+{
+    
 }

@@ -288,12 +288,6 @@ extern(C++, class) struct list(Type, Allocator)
     }
     else version (CppRuntime_Clang)
     {
-        this(def)
-        {
-            allocator!Type alloc_instance = allocator!(Type).init;
-            this(alloc_instance);
-        }
-
         ///
         this(ref const allocator!Type);
 
@@ -301,12 +295,11 @@ extern(C++, class) struct list(Type, Allocator)
         this(ref const list!Type __x);
 
         ///
-        this(size_type __n, ref const value_type value, ref const allocator!Type);
+        this(size_type __n, ref const value_type value);
 
         extern(D) this(size_type n, const value_type element)
         {
-            allocator!Type alloc_instance = allocator!(Type).init;
-            this(n, element, alloc_instance);
+            this(n, element);
         }
 
         this(ref const list!Type other, ref const allocator!Type);
@@ -376,7 +369,7 @@ extern(C++, class) struct list(Type, Allocator)
 
         void clear() nothrow
         {
-            base.clear();
+            this.base.clear();
         }
 
         void push_back(ref const Type val);

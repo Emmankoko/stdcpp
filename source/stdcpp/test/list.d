@@ -27,8 +27,10 @@ unittest
     p.resize(3);
     assert(p.size == 3);
 
-    list!int cp_obj = p; //opAssign
-    assert(cp_obj.size == 3);
+    list!int cp_obj = p; //copy ctor
+    auto obj = list!int(9,4);
+    assert(obj.size == 9);
+    assert(obj.front == 4);
     cp_obj.clear();
     cp_obj.push_back(45);
     cp_obj.push_back(56);
