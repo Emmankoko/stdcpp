@@ -36,4 +36,5 @@ unittest
     cp_obj.push_back(56);
     assert(cp_obj.front == 45);
     assert(cp_obj.back == 56);
+    cp_obj.clear();
 }
