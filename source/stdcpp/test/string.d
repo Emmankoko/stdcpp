@@ -6,7 +6,8 @@
 
 module stdcpp.test.string;
 import stdcpp.string;
-
+version (CppRuntime_Gcc)
+{
 unittest
 {
     auto a = std_string("hello");
@@ -15,4 +16,5 @@ unittest
     assert(std_string.sizeof == 32);
     // verifying small string optimization
     assert(a.capacity == 15);
+}
 }
