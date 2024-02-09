@@ -605,7 +605,7 @@ public:
 	}
 }
 
-
+}
 
 
 extern(C++, class) struct __list_imp(Tp, Alloc)
@@ -648,27 +648,3 @@ extern(C++, class) struct __list_imp(Tp, Alloc)
 					
 }
 
-private:
-	version(CppRuntime_Microsoft)
-	{
-		
-		/*extern(C++) struct _List_node_remove_op
-		{
-			this(ref list) nothrow;
-			_Nodeptr _Transfer_back(const _Nodeptr _Removed);
-
-			~this();
-		}
-		*/
-		extern(C++) struct equal_to(T = void)
-		{
-
-		}
-
-		//might probably be moved to utility 
-		extern(C++) struct less(T = void)
-		{
-
-		}
-	}
-}
