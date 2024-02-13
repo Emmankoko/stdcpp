@@ -281,7 +281,7 @@ private:
 
 			_Rb_tree_impl!Compare _M_impl;
 
-//come back to them later, currently causing seg faults in unrelated functions
+//come back to them later, currently causing seg faults in unrelated function
 /*******************************************************************
 
 
