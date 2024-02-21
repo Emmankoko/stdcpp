@@ -16,9 +16,9 @@
             "dflags": ["-gc"],
             "lflags": [ ""],
             "preGenerateCommands": [
-		"cl -c extras/set.cpp"
+		"clang++ -c extras/set.cpp"
             ],
-            "sourceFiles": [ "*.obj" ]
+            "sourceFiles": [ "*.o" ]
         }
     ]
 }

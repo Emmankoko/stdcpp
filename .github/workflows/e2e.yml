@@ -35,11 +35,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - { name: windows-2019, arch: x86_64 }
+          - { name: macos-12, arch: x86_64 }
         dc:
           - ldc-latest
         target:
-          - { name: msvc-2017, compiler: msvc, cxx-version: 2017 }
+          - { name: clang-15, compiler: clang, cxx-version: 13.0.0 }
 
     # Using a specific version for reproductibility.
     # Feel free to update when a new release has matured.

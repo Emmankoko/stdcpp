@@ -1,3 +1,3 @@
-#include <set>
+#include <map>
 
-template class std::set<int>;
+template class std::map<int, char>;
