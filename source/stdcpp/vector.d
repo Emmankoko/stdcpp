@@ -859,6 +859,14 @@ extern(D):
             return this.__end_cap_.first();
         }
 
+        extern(C++) this(const ref allocator_type __a)
+        {
+            int n = 0;
+            this(0, n, __a);
+        }
+
+        extern(C++) this(size_t __n, const ref value_type __v, const ref allocator_type __a);
+
         ///vector(n) constructor
         extern(C++) this(size_t __n);
 
