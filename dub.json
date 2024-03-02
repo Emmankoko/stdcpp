@@ -13,9 +13,9 @@
         },
         {
             "name": "unittest",
-            "lflags": [ "-lstdc++" ],
+            "lflags": [ "-lstdc++"],
             "preGenerateCommands": [
-		"g++ -c extras/set.cpp -o extras/set.o"
+		"g++ -c extras/unordered_map.cpp -o extras/unordered_map.o"
             ],
             "sourceFiles": [ "extras/*.o" ]
         },
