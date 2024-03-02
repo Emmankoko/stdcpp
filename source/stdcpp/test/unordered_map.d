@@ -6,7 +6,7 @@
 
 module stdcpp.test.unordered_map;
 
-//import stdcpp.test.base;
+
 import stdcpp.unordered_map;
 
 /// Test that the sizes matches
