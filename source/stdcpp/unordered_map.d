@@ -158,8 +158,6 @@ version (CppRuntime_Gcc)
         alias __node_base = __hashtable_alloc.__node_base;
         alias __buckets_ptr = __hashtable_alloc.__buckets_ptr;
         alias __node_base_ptr = __hashtable_alloc.__node_base_ptr;
-
-        ~this();
     
     private:
 
