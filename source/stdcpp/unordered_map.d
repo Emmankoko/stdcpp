@@ -144,7 +144,7 @@ version (CppRuntime_Gcc)
 
     alias __umap_traits(bool _cache) = _Hashtable_traits!(_cache, false, true);
 
-    alias __umap_hashtable(_Key, _Tp, _Hash, _Pred, Alloc, _Tr = __umap_traits!(false) = _Hashtable!(_Key, pair!(const(_Key), _Tp), Alloc, _Select1st, _Pred, _Hash,
+    alias __umap_hashtable(_Key, _Tp, _Hash, _Pred, Alloc, _Tr = __umap_traits!(false)) = _Hashtable!(_Key, pair!(const(_Key), _Tp), Alloc, _Select1st, _Pred, _Hash,
                                                                                 _Mod_range_hashing, _Default_ranged_hash, _Prime_rehash_policy, _Tr );
     extern(C++, class) struct _Hashtable(_Key, _Value, _Alloc, _ExtractKey, _Equal,
                                          _Hash, _RangeHash, _Unused, _RehashPolicy, _Traits)
