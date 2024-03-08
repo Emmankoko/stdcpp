@@ -40,4 +40,4 @@ template class std::set<int>;
 template std::size_t stdcpp::test::cppSizeOf<std::set<int> >();
 
 template class std::unordered_map<int, char>;
-template std::size_t stdcpp::test::cppSizeOf<std::set<int> >();
+template std::size_t stdcpp::test::cppSizeOf<std::unordered_map<int, char> >();
