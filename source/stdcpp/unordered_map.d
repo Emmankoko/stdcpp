@@ -24,7 +24,7 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
     ///
     alias pointer = allocator_traits!(allocator_type).pointer;
 
-    alias _Hashtable = __ummap_hashtable!(Key, value, Hash, KeyEqual, Alloc);
+    alias _Hashtable = __umap_hashtable!(Key, value, Hash, KeyEqual, Alloc);
 
     version(CppRuntime_Gcc)
     {
