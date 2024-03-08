@@ -26,8 +26,6 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
 
     alias _Hashtable = __ummap_hashtable!(Key, value, Hash, KeyEqual, Alloc);
 
-    alias __umap_traits(bool _cache) = _Hashtable_traits!(_cache, false, true);
-
     version(CppRuntime_Gcc)
     {
         ///
@@ -44,7 +42,7 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
         extern(D) this(const ref unordered_map __a)
         {
             allocator_type alloc_instance = allocator_type.init;
-            this(a, alloc_instance);
+            this(__a, alloc_instance);
         }
 
         //only bucket_count is non-default, rest are default. called from 'extern(D) this(size_type __x)'
@@ -72,7 +70,6 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
         ///
         void swap(ref unordered_map other) nothrow;
 
-
         ///bucket interface
         size_type bucket_count() const;
         ///
@@ -90,15 +87,6 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
         ///
         void reserve(size_type count);
 
-
- /*       size_t y;
-        size_t a;
-        size_t b;
-        size_t n;
-        size_t c;
-        size_t d;
-        size_t e;
-        */
     private _Hashtable _M_h;
     }
 }
@@ -154,8 +142,10 @@ version (CppRuntime_Gcc)
         _Hash_node_base __hb;
     }
 
-    alias __umap_hashtable(_Key, _Tp, _Hash, _Pred, Alloc, _Tr = __umap_traits!(__cache_default!(_Key, _Hash).value)) = _Hashtable!(_Key, pair!(const(_Key), _Tp), Alloc, _Select1st, _Pred, _Hash
-                                                                                _Mod_range_hashing, _Default_ranged_hash, _Prime_rehash_policy, _Tr )
+    alias __umap_traits(bool _cache) = _Hashtable_traits!(_cache, false, true);
+
+    alias __umap_hashtable(_Key, _Tp, _Hash, _Pred, Alloc, _Tr = __umap_traits!(false) = _Hashtable!(_Key, pair!(const(_Key), _Tp), Alloc, _Select1st, _Pred, _Hash,
+                                                                                _Mod_range_hashing, _Default_ranged_hash, _Prime_rehash_policy, _Tr );
     extern(C++, class) struct _Hashtable(_Key, _Value, _Alloc, _ExtractKey, _Equal,
                                          _Hash, _RangeHash, _Unused, _RehashPolicy, _Traits)
     {
@@ -173,16 +163,12 @@ version (CppRuntime_Gcc)
     
     private:
 
-        struct _Scoped_node
-        {
-            __hashtable_alloc* _M_h;
-            __node_ptr _M_node;
-        }
-        __bucket_ptr _M_buckets = &_M_single_bucket;
+        __buckets_ptr _M_buckets;
         size_type _M_bucket_count = 1;
         __node_base _M_before_begin;
         size_type _M_element_count = 0;
         _RehashPolicy _M_rehash_policy;
         __node_base_ptr _M_single_bucket;
+        void* _M_void;
     }
 }

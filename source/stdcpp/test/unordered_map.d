@@ -27,6 +27,13 @@ version (CppRuntime_Gcc)
         assert(p.bucket_count == 5);
         assert(p.bucket_size(1) == 1); //return number of elements with index 0
         assert(p.empty == 0);
+        auto q = unordered_map!(int, char)(p); // copy ctor
+        assert(q.size == 3);
+        q.insert(4, 'd');
+        assert(q.size == 4);
+        q.swap(p);
+        assert(q.size == 3); // after swap
+        assert(p.size == 4);
         p.clear();
         assert(p.empty == 1);
     }
