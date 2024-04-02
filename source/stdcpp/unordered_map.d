@@ -1,6 +1,7 @@
 /**
  * D header file for interaction with C++ std::unordered_map.
- *
+ * See_Also:
+ * https://en.cppreference.com/w/cpp/container/unordered_map
  * Copyright: Copyright (c) 2018 D Language Foundation
  * License: Distributed under the
  *      $(LINK2 http://www.boost.org/LICENSE_1_0.txt, Boost Software License 1.0).
@@ -16,8 +17,8 @@ import stdcpp.utility : pair;
 import stdcpp.xutility : StdNamespace;
 extern(C++, (StdNamespace)):
 
-alias unordered_map(Key, value) = unordered_map!(Key, value, hash!Key, equal_to!Key, allocator!(pair!(const(Key), value)));
-extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
+extern(C++, class) struct unordered_map(Key, value, Hash = hash!Key, KeyEqual = equal_to!Key,
+Alloc = allocator!(pair!(const(Key), value)))
 {   ///
     alias key_type = Key;
     ///
@@ -40,17 +41,17 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
     version(CppRuntime_Gcc)
     {
         ///
-        extern(D) this(size_type __x)
+        this(size_type bucket_count)
         {
             allocator_type alloc_instance = allocator_type.init;
             Hash hash_instance = Hash.init;
             key_equal equal_instance = key_equal.init;
-            this(__x, hash_instance, equal_instance, alloc_instance);
+            this(bucket_count, hash_instance, equal_instance, alloc_instance);
         }
         ///
         this(size_type bucket_count, const ref allocator_type);
         ///
-        extern(D) this(const ref unordered_map __a)
+        this(const ref unordered_map __a)
         {
             allocator_type alloc_instance = allocator_type.init;
             this(__a, alloc_instance);
@@ -100,7 +101,7 @@ extern(C++, class) struct unordered_map(Key, value, Hash, KeyEqual, Alloc)
 
     private _Hashtable _M_h;
     }
-    else version(CppRuntime_Microsoft)
+    else version(CppRuntime_Clang)
     {
         static assert(0, "CpppRuntime not yet supported");
     }
