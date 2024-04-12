@@ -29,6 +29,12 @@ else
     alias listNamespace = StdNamespace;
 }
 
+//to set up interfaces common to both gcc and microsoft but not with clang runtime
+version(CppRuntime_Gcc)
+    version = NonClang;
+else version(CppRuntime_Microsoft)
+    version = NonClang;
+
 enum def {value}; //for later use
 extern(C++, (listNamespace)):
 
@@ -40,40 +46,85 @@ extern(C++, class) struct list(Type, Allocator)
 
     ///
     alias value_type = Type;
-
     ///
     alias allocator_type = Allocator;
-
     ///
     alias size_type = size_t;
-
     ///
     alias pointer = Type*;
-
     ///
     alias const_pointer = const(Type)*;
-
     ///
     alias difference_type = ptrdiff_t;
-
     ///
     ref list opAssign();
-
     ///
     @disable this() @safe pure nothrow @nogc scope;
 
+    //allocator ctor
+    this(ref const allocator!Type);
+
+    /// Copy constructor
+    this(ref const list __x);
+    ///
+    extern(D) void assign(size_type n, const value_type item)
+    {
+        this.assign(n, item);
+    }
+    ///
+    void assign(size_type count, ref const value_type value);
+    ///
+    extern(D) void push_back(const Type item)
+    {
+        this.push_back(item);
+    }
+    ///
+    void push_back(ref const Type val);
+    ///
+    extern(D) void push_front(const Type item)
+    {
+        this.push_front(item);
+    }
+    ///
+    void push_front(ref const value_type val);
+    ///
+    void pop_front();
+    ///
+    void pop_back();
+    ///
+    void resize(size_type count);
+
+    ~this();
+
+    version(NonClang)
+    {
+        ///
+        inout(ref) value_type back() inout;
+        ///
+        inout(ref) value_type front() inout;
+    }
+
     version (CppRuntime_Gcc)
     {
+        extern(D) void remove(const value_type item)
+        {
+            this.remove(item);
+        }
+        ///
+        void remove(const ref value_type val);
+        ///
+        private struct node
+        {
+            node* prev;
+            node* next;
+        }
+
+        private node A;
+
         version (GLIBCXX_USE_CXX98_ABI)
         {
-            //allocator ctor
-            this(ref const allocator!Type);
-
             //list(n,value) ctor until c++11
             this(size_type __n, ref const value_type value, ref const allocator!Type);
-
-            /// Copy constructor
-            this(ref const list!Type __x);
 
             extern(D) this(size_type n)
             {
@@ -81,39 +132,20 @@ extern(C++, class) struct list(Type, Allocator)
                 allocator!Type alloc_instance = allocator!(Type).init;
                 this(n, type_instance, alloc_instance);
             }
-
-            extern(D) void assign(size_type n, const value_type item)
-            {
-                this.assign(n, item);
-            }
-
-            extern(D) void push_back(const Type item)
-            {
-                this.push_back(item);
-            }
-
-            extern(D) void push_front(const Type item)
-            {
-                this.push_front(item);
-            }
-
+            ///
             extern(D) void remove(const value_type item)
             {
                 this.remove(item);
             }
-
-            void assign(size_type count, ref const value_type value);
 
             ref list opAssign(ref const list!Type other);
 
             //just const until c++11
             allocator_type get_allocator() const;
 
-            ref value_type front();
+            inout(ref) value_type front() inout;
 
-//          const(value_type) ref front() const;
-
-            ref value_type back();
+            inout(ref) value_type back() inout;
 
             pointer begin();
 
@@ -130,14 +162,6 @@ extern(C++, class) struct list(Type, Allocator)
 
             //insert halted for now
 
-            void push_back(ref const Type val);
-
-            void pop_back();
-
-            void push_front(ref const value_type val);
-
-            void pop_front();
-
             void swap(ref const list!Type other);
 
             void merge( ref const list!Type other);
@@ -153,29 +177,9 @@ extern(C++, class) struct list(Type, Allocator)
             size_type unique();
 
             void sort(U)(U comp);
-
-            private struct node
-            {
-                node* prev;
-                node* next;
-            }
-            // pre-c++11 doesn't keep track of its size
-            private node A;
         }
         else // !GLIBCXX_USE_CXX98_ABI
         {
-            this(def)
-            {
-                allocator!Type alloc_instance = allocator!(Type).init;
-                this(alloc_instance);
-            }
-
-             //allocator ctor
-            this(ref const allocator!Type);
-
-            // Copy constructor
-            this(ref const list!Type __x);
-
              //list(n,value) ctor
             this(size_type __n, ref const value_type value, ref const allocator!Type);
 
@@ -196,21 +200,6 @@ extern(C++, class) struct list(Type, Allocator)
                 this(n, alloc_instance);
             }
 
-            extern(D) void assign(size_type n, const value_type item)
-            {
-                this.assign(n, item);
-            }
-
-            extern(D) void push_back(const Type item)
-            {
-                this.push_back(item);
-            }
-
-            extern(D) void push_front(const Type item)
-            {
-                this.push_front(item);
-            }
-
             extern(D) void resize(size_type n, const value_type item)
             {
                 this.resize(n, item);
@@ -228,10 +217,6 @@ extern(C++, class) struct list(Type, Allocator)
             //const nothrow since C++11
             allocator_type get_allocator() const nothrow;
 
-            ref value_type front();
-
-            ref value_type back();
-
             pointer begin() nothrow;
 
             pointer end() nothrow;
@@ -242,16 +227,6 @@ extern(C++, class) struct list(Type, Allocator)
             size_type size() const nothrow;
 
             void clear() nothrow;
-
-            void push_back(ref const Type val);
-
-            void pop_back();
-
-            void push_front(ref const value_type val);
-
-            void pop_front();
-
-            void resize(size_type count);
 
             void resize(size_type count, ref const value_type val);
 
@@ -267,33 +242,17 @@ extern(C++, class) struct list(Type, Allocator)
 
             void sort();
 
-            void sort(U)(U comp);
-
-            void unique();
-
-            void unique(U)(U p);
+            //todo: add sort(U)()
 
             size_type unique();
 
-            size_type unique(U)(U p);
+            // todo: add size_type unique(U)(U p);
 
-            private struct node
-            {
-                node* prev;
-                node* next;
-            }
-            private node A;
             private size_type _M_size; //new list keeps track of it's size
         }
     }
     else version (CppRuntime_Clang)
     {
-        ///
-        this(ref const allocator!Type);
-
-        /// Copy constructor
-        this(ref const list!Type __x);
-
         this(size_type __n, ref const value_type value);
         ///
         extern(D) this(size_type n, const value_type element)
@@ -307,23 +266,6 @@ extern(C++, class) struct list(Type, Allocator)
         ///
         this(size_type n);
         ///
-        ~this();
-        ///
-        extern(D) void assign(size_type n, const value_type item)
-        {
-            this.assign(n, item);
-        }
-        ///
-        extern(D) void push_back(const Type item)
-        {
-            this.push_back(item);
-        }
-        ///
-        extern(D) void push_front(const Type item)
-        {
-            this.push_front(item);
-        }
-        ///
         extern(D) void resize(size_type n, const value_type item)
         {
             this.resize(n, item);
@@ -336,17 +278,15 @@ extern(C++, class) struct list(Type, Allocator)
         ///
         ref list opAssign(ref const list!Type other);
         ///
-        void assign(size_type count, ref const value_type value);
-        ///
         allocator_type get_allocator() const nothrow;
         ///
-        ref value_type front()
+        inout(ref) value_type front() inout
         {
             assert(!empty, "list.front called on empty list");
             return base.__end_.next.__as_node.__get_value;
         }
         ///
-        ref value_type back()
+        inout(ref) value_type back() inout
         {
             assert(!empty, "list.back called on empty list");
             return base.__end_.prev.__as_node.__get_value;
@@ -370,16 +310,6 @@ extern(C++, class) struct list(Type, Allocator)
         {
             base.clear();
         }
-
-        void push_back(ref const Type val);
-        ///
-        void pop_back();
-
-        void push_front(ref const value_type val);
-        ///
-        void pop_front();
-
-        void resize(size_type count);
 
         void resize(size_type count, ref const value_type val);
 
@@ -406,10 +336,6 @@ extern(C++, class) struct list(Type, Allocator)
     else version(CppRuntime_Microsoft)
     {
 
-        this(ref const allocator!Type);
-
-        this(ref const list!Type __x);
-
         this(size_type __n, ref const value_type value, ref const allocator!Type);
 
 		extern(D) this(size_type n, const value_type element)
@@ -424,23 +350,6 @@ extern(C++, class) struct list(Type, Allocator)
 
         this(size_type n);
 
-        ~this();
-
-        extern(D) void assign(size_type n, const value_type item)
-        {
-            this.assign(n, item);
-        }
-
-        extern(D) void push_back(const Type item)
-        {
-            this.push_back(item);
-        }
-
-        extern(D) void push_front(const Type item)
-        {
-            this.push_front(item);
-        }
-
         extern(D) void resize(size_type n, const value_type item)
         {
             this.resize(n, item);
@@ -448,13 +357,7 @@ extern(C++, class) struct list(Type, Allocator)
 
         ref list opAssign(ref const list!Type other);
 
-        void assign(size_type count, ref const value_type value);
-
         allocator_type get_allocator() const nothrow;
-
-        ref value_type front();
-
-        ref value_type back();
 
         pointer begin() nothrow;
 
