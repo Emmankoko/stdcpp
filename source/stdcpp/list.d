@@ -57,9 +57,6 @@ extern(C++, class) struct list(Type, Allocator)
     alias difference_type = ptrdiff_t;
 
     ///
-    ref list opAssign();
-
-    ///
     @disable this() @safe pure nothrow @nogc scope;
 
     version (CppRuntime_Gcc)
@@ -334,7 +331,14 @@ extern(C++, class) struct list(Type, Allocator)
             this.remove(item);
         }
         ///
-        ref list opAssign(ref const list!Type other);
+        ref list opAssign(ref const list other)
+        {
+            import core.lifetime : emplace;
+
+            destroy!false(this);
+            emplace!(list)(&this, other);
+            return this;
+        }
         ///
         void assign(size_type count, ref const value_type value);
         ///
@@ -574,5 +578,12 @@ version (CppRuntime_Clang)
         bool empty() const nothrow  {return __sz() == 0; }
 
         void clear() nothrow;
+
+        void __copy_assign_alloc(const ref __list_imp __c)
+        {
+            if (__node_alloc() != __c.__node_alloc())
+                clear();
+            __node_alloc() = __c.__node_alloc();
+        }
     }
 }

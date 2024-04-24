@@ -48,4 +48,8 @@ unittest
     allocator!int alloc_instance = allocator!(int).init;
     auto q = list!int(8, 9);
     assert(q.get_allocator == alloc_instance);
+    assert(q.size == 8);
+    auto p = list!int(3);
+    q = p; // opAssign
+    assert(q.size == 3); // after opAssign
 }
