@@ -33,11 +33,19 @@ unittest
     p.resize(3);
     assert(p.size == 3);
 
-    list!int cp_obj = p; //opAssign
+    list!int cp_obj = p; // copy ctor
     assert(cp_obj.size == 3);
     cp_obj.clear();
     cp_obj.push_back(45);
     cp_obj.push_back(56);
     assert(cp_obj.front == 45);
     assert(cp_obj.back == 56);
+}
+
+unittest
+{
+    import stdcpp.allocator;
+    allocator!int alloc_instance = allocator!(int).init;
+    auto q = list!int(8, 9);
+    assert(q.get_allocator == alloc_instance);
 }
