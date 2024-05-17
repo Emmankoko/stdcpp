@@ -20,7 +20,7 @@
                 "$PACKAGE_DIR/extras/cxx-wrapper.sh test",
             ],
             "preGenerateCommands-windows": [
-                "cl /c /Fo: $PACKAGE_DIR/extras/ $PACKAGE_DIR/extras/test.cpp",
+                "cl /c /I$PACKAGE_DIR/extras/AssociativeContainers/ /Fo: $PACKAGE_DIR/extras/ $PACKAGE_DIR/extras/test.cpp",
             ],
             "sourceFiles-posix": [ "extras/test.o" ],
             "sourceFiles-windows": [ "extras/test.obj" ]
