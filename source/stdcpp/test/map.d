@@ -11,6 +11,5 @@ import stdcpp.map;
 unittest
 {
     auto mymap = Map!(int, char).make();
-    mymap.opIndexAssign(4, 'a');
+    mymap.opIndexAssign(1, 'a');
 }
-
