@@ -12,12 +12,14 @@
 template <typename K, typename V>
 class Map
 {
-    static Map<K,V>* make()         {return new Map<K, V>(); }
-
     void insertOrAssign(const K& key, const V& value)
     {
         this->map.insert_or_assign(key, value);
     }
 
     std::map<K, V> map;
+
+public: // msvc mangles public and private static fields differently so need for public
+    static Map<K,V>* make()         {return new Map<K, V>(); }
+
 };
