@@ -12,4 +12,5 @@ unittest
 {
     auto mymap = Map!(int, char).make();
     mymap.opIndexAssign(1, 'a');
+    assert(mymap.size == 1);
 }

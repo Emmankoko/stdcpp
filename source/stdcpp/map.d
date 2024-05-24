@@ -19,5 +19,6 @@ module stdcpp.map;
     }
 
     static Map* make();
-    private void insertOrAssign(const ref Key, const ref Value); 
+    private void insertOrAssign(const ref Key, const ref Value);
+    size_t size();
  }

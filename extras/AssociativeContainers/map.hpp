@@ -20,6 +20,7 @@ class Map
     std::map<K, V> map;
 
 public: // msvc mangles public and private static fields differently so need for public
-    static Map<K,V>* make()         {return new Map<K, V>(); }
+    static Map<K,V>* make()         { return new Map<K, V>(); }
 
+    size_t size()                   { return this->map.size(); }
 };
