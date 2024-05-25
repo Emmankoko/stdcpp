@@ -25,4 +25,12 @@ public: // msvc mangles public and private static fields differently so need for
     size_t size()                   { return this->map.size(); }
 
     V& operator[] (K const& key)    { return this->map[key]; }
+
+    V& at(K const& key)             { return this->map.at(key); }
+
+    bool empty() const noexcept     { return this->map.empty(); }
+
+    size_t max_size() const         { return this->map.max_size(); }
+
+    void clear() noexcept           { this->map.clear(); }
 };

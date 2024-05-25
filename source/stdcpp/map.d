@@ -30,4 +30,17 @@ module stdcpp.map;
     {
         return this.opIndex(key); // handle rvalue-ref
     }
+
+    ref Value at( ref const Key key);
+
+    ref Value at(const Key key)
+    {
+        return this.at(key);
+    }
+
+    bool empty() const nothrow;
+
+    size_t max_size() const;
+
+    void clear() nothrow;
  }

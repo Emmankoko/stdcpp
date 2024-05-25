@@ -17,4 +17,9 @@ unittest
     mymap.opIndex(2) = 'b';
     mymap.opIndex(3) = 'c';
     assert(mymap.size == 3);
+    assert(mymap.empty == 0);
+    assert(mymap.at(2) == 'b');
+    mymap.clear();
+    assert(mymap.size == 0);
+    assert(mymap.empty == 1);
 }
