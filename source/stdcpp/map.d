@@ -19,6 +19,15 @@ module stdcpp.map;
     }
 
     static Map* make();
+
     private void insertOrAssign(const ref Key, const ref Value);
+
     size_t size();
+
+    ref Value opIndex( ref const Key key);
+
+    ref Value opIndex(const Key key)
+    {
+        return this.opIndex(key); // handle rvalue-ref
+    }
  }

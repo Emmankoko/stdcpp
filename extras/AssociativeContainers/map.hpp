@@ -23,4 +23,6 @@ public: // msvc mangles public and private static fields differently so need for
     static Map<K,V>* make()         { return new Map<K, V>(); }
 
     size_t size()                   { return this->map.size(); }
+
+    V& operator[] (K const& key)    { return this->map[key]; }
 };
