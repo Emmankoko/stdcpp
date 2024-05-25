@@ -33,7 +33,7 @@ module stdcpp.map;
 
     ref Value at( ref const Key key);
 
-    ref Value at(const Key key)
+    extern(D) ref Value at(const Key key)
     {
         return this.at(key);
     }
@@ -43,4 +43,11 @@ module stdcpp.map;
     size_t max_size() const;
 
     void clear() nothrow;
+
+    size_t count(ref const Key key) const;
+
+    extern(D) size_t count(const Key key) const
+    {
+        return this.count(key);
+    }
  }

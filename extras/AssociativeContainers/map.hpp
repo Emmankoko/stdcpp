@@ -33,4 +33,7 @@ public: // msvc mangles public and private static fields differently so need for
     size_t max_size() const         { return this->map.max_size(); }
 
     void clear() noexcept           { this->map.clear(); }
+
+    size_t count(K const& key ) const { return this->map.count(key); }
+
 };

@@ -19,7 +19,9 @@ unittest
     assert(mymap.size == 3);
     assert(mymap.empty == 0);
     assert(mymap.at(2) == 'b');
+    assert(mymap.count(1) == 1);
     mymap.clear();
     assert(mymap.size == 0);
     assert(mymap.empty == 1);
+    assert(mymap.count(1) == 0); // container cleared
 }
