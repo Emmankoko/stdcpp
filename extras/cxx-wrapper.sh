@@ -14,4 +14,4 @@ fi
 
 EXTRAS_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
-$CXX -c ${EXTRAS_DIR}/$1.cpp -o ${EXTRAS_DIR}/$1.o -I${EXTRAS_DIR}/AssociativeContainers/ -std=c++17
+$CXX -c ${EXTRAS_DIR}/$1.cpp -o ${EXTRAS_DIR}/$1.o -I${EXTRAS_DIR}/AssociativeContainers/ --std=c++2a
