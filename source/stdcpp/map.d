@@ -50,4 +50,11 @@ module stdcpp.map;
     {
         return this.count(key);
     }
+
+    bool contains( ref const Key key) const;
+
+    extern(D) bool contains(const Key key) const
+    {
+        return this.contains(key);
+    }
  }
