@@ -25,4 +25,14 @@ unittest
     assert(mymap.size == 0);
     assert(mymap.empty == 1);
     assert(mymap.count(1) == 0); // container cleared
+    /* utilities to use to test after a swap */
+    mymap.opIndex(2) = 'b';
+    mymap.opIndex(3) = 'c';
+
+    /* testing for swap*/
+    auto mymap2 = Map!(int, char).make();
+    mymap2.swap(mymap);
+    assert(mymap2.size == 2);
+    assert(mymap2.at(2) == 'b');
+    assert(mymap2.at(3) == 'c'); // swap works!
 }

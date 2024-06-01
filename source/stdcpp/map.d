@@ -58,4 +58,6 @@ module stdcpp.map;
     {
         return this.contains(key);
     }
+    ///
+    void swap( Map* other) nothrow;
  }
