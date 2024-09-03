@@ -840,6 +840,8 @@ extern(D):
         extern(C++) pointer begin() nothrow;
 
         extern(C++) pointer end() nothrow;
+
+        extern(C++) ~this();
     }
     else version (CppRuntime_Clang)
     {

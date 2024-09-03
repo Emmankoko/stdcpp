@@ -16,6 +16,7 @@
             "lflags-posix": [ "-lstdc++" ],
             "lflags-linux": [ "--export-dynamic" ],
             "lflags-osx": [ "-export_dynamic" ],
+            "dflags" : [ "-fsanitize=address" ],
             "preGenerateCommands-posix": [
                 "$PACKAGE_DIR/extras/cxx-wrapper.sh test",
             ],

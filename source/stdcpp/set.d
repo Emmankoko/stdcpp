@@ -55,7 +55,7 @@ extern(C++, class) struct set(Key, compare, Alloc)
         ///
         this(ref const set!(Key) __x, ref const allocator!(Key));
         ///
-        allocator_type get_allocator() const nothrow; 
+        allocator_type get_allocator() const nothrow;
         ///
         size_type size() const nothrow;
         ///
@@ -203,5 +203,13 @@ version (CppRuntime_Gcc)
         inout(pointer) end() inout nothrow;
 
         inout(pointer) find(const ref _Key __k) inout;
+
+        /*
+         * clang on linux only emits the base object dtor(D2)
+         * so we can safely force mangle it to that
+         * since the complete dtor(D1) calls D2 in its stack frame
+         */
+        pragma(mangle, "_ZNSt8_Rb_treeIiiSt9_IdentityIiESt4lessIiESaIiEED2Ev")
+        ~this();
     }
 }

@@ -154,6 +154,8 @@ extern(C++, class) struct list(Type, Allocator)
 
             void sort(U)(U comp);
 
+            ~this();
+
             private struct node
             {
                 node* prev;
@@ -276,6 +278,11 @@ extern(C++, class) struct list(Type, Allocator)
             size_type unique();
 
             size_type unique(U)(U p);
+
+            ~this()
+            {
+                _List_base!(value_type, allocator_type)._M_clear();
+            }
 
             private struct node
             {
@@ -574,5 +581,14 @@ version (CppRuntime_Clang)
         bool empty() const nothrow  {return __sz() == 0; }
 
         void clear() nothrow;
+    }
+}
+
+version (CppRuntime_Gcc)
+{
+    extern(C++, class) struct _List_base(T, Alloc)
+    {
+        /* so we can call it on the type */
+        static void _M_clear() nothrow;
     }
 }
