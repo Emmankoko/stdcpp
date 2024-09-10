@@ -106,3 +106,17 @@ else version (CppRuntime_Clang)
         assert(vec.size == 7);
     }
 }
+
+void foo(ref vector!int vec)
+{
+    //modify vector argument
+    vec.clear;
+}
+
+unittest
+{
+    vector!int obj = 5;
+    assert(obj.size == 5);
+    foo(obj);
+    assert(obj.size == 0);
+}
